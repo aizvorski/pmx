@@ -938,8 +938,8 @@ class Keys(object):
     def __ne__(self, other): return self._main._sequence != other
     def __gt__(self, other): return self._main._sequence >  other
     def __ge__(self, other): return self._main._sequence >= other
-    # FIXME: do we need __cmp__ as well as rich comparisons?
-    def __cmp__(self, other): return cmp(self._main._sequence, other)
+    # FIXME: __cmp__ not used in python3
+    # def __cmp__(self, other): return cmp(self._main._sequence, other)
 
     def __contains__(self, item): return item in self._main._sequence
     def __len__(self): return len(self._main._sequence)
@@ -1023,7 +1023,7 @@ class Items(object):
     def __ne__(self, other): return list(self._main.items()) != other
     def __gt__(self, other): return list(self._main.items()) >  other
     def __ge__(self, other): return list(self._main.items()) >= other
-    def __cmp__(self, other): return cmp(list(self._main.items()), other)
+    # def __cmp__(self, other): return cmp(list(self._main.items()), other)
 
     def __contains__(self, item): return item in list(self._main.items())
     def __len__(self): return len(self._main._sequence) # easier :-)
@@ -1106,7 +1106,7 @@ class Values(object):
             keys = self._main._sequence[index]
             if len(keys) != len(value):
                 raise ValueError('attempt to assign sequence of size %s '
-                    'to slice of size %s' % (len(name), len(keys)))
+                    'to slice of size %s' % (len(value), len(keys)))
             # FIXME: efficiency?  Would be better to calculate the indexes
             #   directly from the slice object
             # NOTE: the new keys can collide with existing keys (or even
@@ -1127,7 +1127,7 @@ class Values(object):
     def __ne__(self, other): return list(self._main.values()) != other
     def __gt__(self, other): return list(self._main.values()) >  other
     def __ge__(self, other): return list(self._main.values()) >= other
-    def __cmp__(self, other): return cmp(list(self._main.values()), other)
+    # def __cmp__(self, other): return cmp(list(self._main.values()), other)
 
     def __contains__(self, item): return item in list(self._main.values())
     def __len__(self): return len(self._main._sequence) # easier :-)
