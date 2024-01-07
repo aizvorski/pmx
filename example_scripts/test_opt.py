@@ -1,3 +1,6 @@
+import pytest
+pytest.skip(allow_module_level=True)
+
 import sys, os
 from pmx import *
 

@@ -2,7 +2,7 @@ import sys, os
 
 from pmx.forcefield2 import *
 
-top = ITPFile( sys.argv[1])
+top = ITPFile('./protLig_benchmark/pde2/ligands_cgenff/lig_50181001/MOL.itp')
 ## for atom in top.atoms:
 ##     atom.atomtypeB = 'DUM'
 ##     atom.qB = 0
