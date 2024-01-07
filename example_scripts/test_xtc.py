@@ -1,7 +1,3 @@
-import pytest
-pytest.skip(allow_module_level=True)
-# skip because "OSError: pmx/_xdrio.so: cannot open shared object file: No such file or directory"
-
 from pmx import *
 from pmx.xtc import *
 import sys, os
@@ -13,6 +9,10 @@ atom1 = m.residues[1]['CA']    # CA-atom of first residues
 atom2 = m.residues[297]['CA']  # CA-atom of last residue
 distance_12 = lambda a,b: a-b   # function that returns the distance between atom1 and atom2
 fp = open("analysis.dat","w")  # open output file
+
+import pytest
+pytest.skip(allow_module_level=True)
+# skip because no .xtc file
 
 trj = Trajectory("concoord.xtc")          # open xtc file and read first frame
 for frame in trj:                        # go over each frame
