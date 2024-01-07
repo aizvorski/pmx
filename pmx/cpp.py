@@ -134,7 +134,7 @@ CPP_to_Python_Ops_Sub = lambda m, d=CPP_to_Python_Ops_Dict: d[m.group(0)]
 # "!" in "!=" first, instead of finding the longest match.
 # What's up with that?
 l = list(CPP_to_Python_Ops_Dict.keys())
-l.sort(lambda a, b: cmp(len(b), len(a)))
+l.sort(key=len, reverse=True)
 
 # Turn the list of keys into one regular expression that will allow us
 # to substitute all of the operators at once.
