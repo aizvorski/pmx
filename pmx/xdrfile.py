@@ -172,7 +172,7 @@ class XDRFile:
 
         #load libxdrfil
         try:
-            p = os.path.join(os.path.dirname(__file__),'_xdrio.so')
+            p = os.path.join(os.path.dirname(__file__),'_xdrio.cpython-310-x86_64-linux-gnu.so')
             self.xdr=cdll.LoadLibrary(p)
         except:
             raise IOError("_xdrio.so can't be loaded")
