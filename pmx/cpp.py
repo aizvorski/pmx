@@ -261,7 +261,7 @@ class PreProcessor:
         self.cpp_namespace['__dict__'] = self.cpp_namespace
 
         if all:
-           self.do_include = self.all_include
+            self.do_include = self.all_include
 
         # For efficiency, a dispatch table maps each C preprocessor
         # directive (#if, #define, etc.) to the method that should be
@@ -590,5 +590,3 @@ class DumbPreProcessor(PreProcessor):
             d[func] = d[func] = self.do_nothing
 
 del __revision__
-
-

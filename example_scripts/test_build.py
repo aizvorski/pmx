@@ -49,4 +49,3 @@ c.write("repeat_helix.pdb")
 from pmx.builder import *
 model = build_dna_strand("ACGTGTCA")
 model.write("dna.pdb")
-

@@ -34,4 +34,3 @@ top.write('new.itp')
 
 #nb = NBParser("ffamber99sbnb.itp")
 #print nb
-

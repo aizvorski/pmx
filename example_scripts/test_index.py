@@ -20,4 +20,3 @@ ndx.add_group( grp )
 print ndx
 #for atom in atoms:
 #    print atom
-

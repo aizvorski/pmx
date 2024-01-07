@@ -67,13 +67,13 @@ class RTPParser:
             # read cmap (only for charmm)
             cmap = readSection(rtp_lines,'[ cmap ]','[')
             #print cmap
-	    #cmap = self.__read_rtp_cmap(key, cl)
+            #cmap = self.__read_rtp_cmap(key, cl)
             self.entries[key] = {
                 'atoms': atoms,
                 'bonds': bonds,
                 'diheds': diheds,
                 'improps': improps,
-		'cmap' : cmap
+                'cmap' : cmap
                 }
 
     def __str__(self):
@@ -117,19 +117,19 @@ class RTPParser:
         for key in self.keys:
             entr = self.entries[key]
             print >>fp, '[ %s ]' % key
-            print >>fp, ' [ atoms ]' 
+            print >>fp, ' [ atoms ]'
             for atom in entr['atoms']:
                 print >>fp, "%6s   %-15s  %8.5f  %d" % (atom[0], atom[1], atom[2], atom[3])
             if entr['bonds']:
-                print >>fp, ' [ bonds ]' 
+                print >>fp, ' [ bonds ]'
                 for bond in entr['bonds']:
-                    print >>fp, "%6s  %6s" % (bond[0], bond[1]) 
+                    print >>fp, "%6s  %6s" % (bond[0], bond[1])
             if entr['diheds']:
-                print >>fp, ' [ dihedrals ]' 
+                print >>fp, ' [ dihedrals ]'
                 for dih in entr['diheds']:
                     print >>fp, "%6s  %6s  %6s  %6s  %-25s" % ( dih[0], dih[1], dih[2], dih[3], dih[4])
             if entr['improps']:
-                print >>fp, ' [ impropers ]' 
+                print >>fp, ' [ impropers ]'
                 for dih in entr['improps']:
                     try:
                         print >>fp, "%6s  %6s  %6s  %6s  %-25s" % ( dih[0], dih[1], dih[2], dih[3], dih[4])
@@ -140,13 +140,13 @@ class RTPParser:
 
 
 
-            
+
     def __check_residue_tree(self, model):
         for c in model.chains:
             if not c.residue_tree_ok:
                 print >>sys.stderr, 'pmx_Error_> Broken residue tree in chain ', c.id
                 sys.exit(1)
-            
+
     def assign_params( self, model):
         self.__check_residue_tree(model)
         self.__assign_atom_params(model)
@@ -154,7 +154,7 @@ class RTPParser:
         self.__make_angles(model)
         self.__make_dihedrals(model)
         self.__make_impropers(model)
-        
+
     def assign_dihedral_params(self, model, directives):
         for dih in model.dihedral_list:
             a1, a2, a3, a4 = dih[:4]
@@ -196,7 +196,7 @@ class RTPParser:
                 atom.atomtype = atom_entry[1]
                 atom.q = atom_entry[2]
                 atom.cgnr = atom_entry[3]
-                
+
     def __make_bonds(self, model):
         model.bond_list = []
         for residue in model.residues:
@@ -239,7 +239,7 @@ class RTPParser:
                             sg1.bonds.append(sg2)
                             sg2.bonds.append(sg1)
                             model.bond_list.append( [sg1, sg2] )
-                            
+
         for atom in model.atoms:
             for b in atom.bonds:
                 atom.connected.append( b )
@@ -256,7 +256,7 @@ class RTPParser:
                         atom.connected.append( bb )
                         bb.connected.append( atom )
                         model.angle_list.append( [atom, b, bb] )
-                        
+
     def __make_dihedrals(self, model):
         model.dihedral_list = []
         for atom in model.atoms:
@@ -272,8 +272,8 @@ class RTPParser:
                                         bbb.b14.append( atom )
                                         atom.connected.append( bbb )
                                         bbb.connected.append( atom )
-                                    
-                    
+
+
 
 
 
@@ -294,8 +294,8 @@ class RTPParser:
                     atoms.append( atom )
                 assert len(atoms) == 4
                 model.improper_list.append( atoms+ [imp[4]]  )
-        
-    
+
+
     def __get_residue_names(self):
         self.keys = []
         for line in self.lines:
@@ -303,7 +303,7 @@ class RTPParser:
                 if line.strip()[1:-1].strip() not in \
                        ['atoms','bonds','dihedrals','impropers','bondedtypes']:
                     self.keys.append( line.strip()[1:-1].strip() )
-    
+
 
 
     def __read_residue_entry(self, key ):
@@ -321,8 +321,8 @@ class RTPParser:
             else:
                 r.append(line)
         return r
-        
-    
+
+
     def __read_rtp_atoms(self, resname, lines ):
         atoms = []
         for line in lines:
@@ -430,8 +430,8 @@ class RTPParser:
                d[3] == name1):
                 return d
         return None
-    
-                
+
+
 
 
 class BondedParser:
@@ -446,7 +446,7 @@ class BondedParser:
         self.dihedraltypes = []
         if filename:
             self.parse(filename)
-            
+
     def parse(self, filename):
         if not hasattr(filename,"append"): # not a list
             filename = pmx_data_file(filename)
@@ -464,7 +464,7 @@ class BondedParser:
     def __str__(self):
         s = '< %s | %s >' % (self.__class__, self.filename )
         return s
-    
+
     def assign_params(self, model):
         for bond in model.bond_list:
             params = self.get_bond_param(bond[0].bond_type, bond[1].bond_type)
@@ -473,7 +473,7 @@ class BondedParser:
             params = self.get_angle_param(angle[0].bond_type, angle[1].bond_type, angle[2].bond_type)
             angle.extend( params )
         for dih in model.dihedral_list:
-            params = self.get_dihedral_param(dih[0].bond_type, dih[1].bond_type, dih[2].bond_type, dih[3].bond_type, 3) 
+            params = self.get_dihedral_param(dih[0].bond_type, dih[1].bond_type, dih[2].bond_type, dih[3].bond_type, 3)
             dih.extend( params )
 
         for dih in model.improper_list:
@@ -484,14 +484,14 @@ class BondedParser:
                 dih = dih[:4] + [1]+ self.directives[dih[4]]
 
 
-            
+
     def get_bond_param(self, type1, type2 ):
         for entr in self.bondtypes:
             if (type1 == entr[0] and type2 == entr[1]) or \
                (type1 == entr[1] and type2 == entr[0]):
                 return entr[2:]
         return None
-    
+
     def get_angle_param(self, type1, type2, type3):
         for entr in self.angletypes:
             if (type1 == entr[0] and \
@@ -501,13 +501,13 @@ class BondedParser:
                  type2 == entr[1] and \
                  type3 == entr[0]):
                 return entr[3:]
-        return None 
+        return None
 
-    
+
     def get_dihedral_param(self, type1,type2,type3,type4,func):
-        
-	self.result = []
-	found = 0
+
+        self.result = []
+        found = 0
         for entr in self.dihedraltypes:
             if (type1 == entr[0] and \
                 type2 == entr[1] and \
@@ -517,12 +517,12 @@ class BondedParser:
                  type2 == entr[2] and \
                  type3 == entr[1] and \
                  type4 == entr[0] and func==entr[4]):
-	 	self.result.append(entr[4:])
-		found = 1
-		if(func != 9):
-		    return self.result
-	if( found==1 ):
-	    return self.result
+                self.result.append(entr[4:])
+                found = 1
+                if(func != 9):
+                    return self.result
+        if( found==1 ):
+            return self.result
         for entr in self.dihedraltypes:
             if ('X' == entr[0] and \
                 type2 == entr[1] and \
@@ -543,8 +543,8 @@ class BondedParser:
                  type2 == entr[2] and \
                  type3 == entr[1] and \
                  'X' == entr[0] and func==entr[4]):
-		self.result.append(entr[4:])
-		found = 1
+                self.result.append(entr[4:])
+                found = 1
                 if(func != 9):
                     return self.result
         if( found==1 ):
@@ -559,7 +559,7 @@ class BondedParser:
                  type3 == entr[1] and \
                  'X' == entr[0] and func==entr[4]):
                 self.result.append(entr[4:])
-		found = 1
+                found = 1
                 if(func != 9):
                     return self.result
         if( found==1 ):
@@ -574,7 +574,7 @@ class BondedParser:
                  'X' == entr[1] and \
                  'X' == entr[0] and func==entr[4]):
                 self.result.append(entr[4:])
-		found = 1
+                found = 1
                 if(func != 9):
                     return self.result
         if( found==1 ):
@@ -591,7 +591,7 @@ class BondedParser:
                 self.result.append(entr[4:])
                 if(func != 9):
                     return self.result
-        for entr in self.dihedraltypes: 
+        for entr in self.dihedraltypes:
             if (type1 == entr[0] and \
                 'X' == entr[1] and \
                 'X' == entr[2] and \
@@ -603,7 +603,7 @@ class BondedParser:
                 self.result.append(entr[4:])
                 if(func != 9):
                     return self.result
-        
+
         return self.result
 
 
@@ -616,7 +616,7 @@ class BondedParser:
                 params = [float(x) for x in entr[2:] ]
                 self.directives[name] = params
         self.lines = kickOutComments(self.lines,'#')
-        
+
     def __parse_bondtypes(self):
         res = []
         starts = []
@@ -637,16 +637,16 @@ class BondedParser:
                 starts.append(i)
         for s in starts:
             lst = readSection(self.lines[s:],'[ angletypes ]','[')
-	    try :
+            try :
                 lst = parseList('sssiff',lst)
             except:
                 try:
                     lst = parseList('sssiffff',lst)
-		except:
-		    print "Unkown Angle type"
-		    exit()
+                except:
+                    print "Unkown Angle type"
+                    exit()
             res.extend(lst)
-        self.angletypes = res 
+        self.angletypes = res
 
     def __parse_dihedraltypes(self):
         res = []
@@ -662,9 +662,9 @@ class BondedParser:
                 try:
                     lst = parseList('ssssiffi',lst)
                 except:
-		    try :
+                    try :
                         lst = parseList('ssiffi',lst)
-	            except :
+                    except :
                         lst = parseList('ssssiff',lst)
             res.extend(lst)
         self.dihedraltypes = res
@@ -682,7 +682,7 @@ class NBParser:
         if filename is not None:
             self.parse(filename, version)
 
-            
+
     def parse(self, filename, version):
         if not hasattr(filename,"append"): # not a list
             filename = pmx_data_file(filename)
@@ -697,12 +697,12 @@ class NBParser:
     def __str__(self):
         s = '< %s | %s >' % (self.__class__, self.filename )
         return s
-    
+
     def __parse_atomtypes(self, version):
 
         self.atomtypes = {}
         lst = readSection(self.lines,'[ atomtypes ]','[')
-	ffnamelower = self.ff.lower()
+        ffnamelower = self.ff.lower()
         if version == 'old':
             if ffnamelower.startswith('amber') :
                 lst = parseList('ssffsff',lst)
@@ -722,7 +722,7 @@ class NBParser:
                         'sigma':entr[6]*10, # nm -> A
                         'eps':entr[7]
                         }
-                
+
         elif version == 'new':
             if ffnamelower.startswith('amber') or ffnamelower.startswith('charmm'):
                 lst = parseList('siffsff',lst)
@@ -741,7 +741,7 @@ class NBParser:
                         'mass':float(entr[3]),
                         'sigma':entr[6]*10, # nm -> A
                         'eps':entr[7]
-			}
+                        }
             elif ffnamelower.startswith('gaff'):
                 try:
                     lst = parseList('sffsff',lst)
@@ -762,35 +762,32 @@ class NBParser:
                             'charge':float(entr[3]),
                             'sigma':entr[5]*10, # nm -> A
                             'eps':entr[6]
-               		    }
- 
+                            }
+
     def assign_params(self, model):
         for atom in model.atoms:
             atom.bond_type = self.atomtypes[atom.atomtype]['bond_type']
             atom.sigma = self.atomtypes[atom.atomtype]['sigma']
             atom.eps = self.atomtypes[atom.atomtype]['eps']
-            
+
 
 
 
 
 class ATPParser:
-    
+
     def __init__(self,  fn = 'ffamber99sb.atp'):
         self.fn = fn
         self.dic = {}
         if fn is not None:
             self.parse()
-        
+
     def parse(self):
         lst = open(self.fn).readlines()
         lst = kickOutComments(lst,';')
         lst = parseList('sf', lst)
         for tp,  mass in lst:
             self.dic[tp] = mass
-        
+
     def __getitem__(self,  item):
         return self.dic[item]
-        
-
-

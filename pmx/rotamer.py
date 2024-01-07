@@ -33,7 +33,7 @@ library"""
 import os, sys
 from library import pmx_data_file, _aacids_dic
 
-import molecule 
+import molecule
 import cPickle
 from geometry import *
 
@@ -46,7 +46,7 @@ _aa_chi = { 'CYS' :
           2: [('CA' , 'CB' , 'CG' , 'OD1'), ['OD1','OD2','HD2']]},
         'GLU' :
         { 1: [('N'  , 'CA' , 'CB' , 'CG' ),['1HB','2HB','CG','1HG','2HG','CD','OE1','OE2','HE2']],
-          2: [('CA' , 'CB' , 'CG' , 'CD' ),['1HG','2HG','CD','OE1','OE2','HE2']], 
+          2: [('CA' , 'CB' , 'CG' , 'CD' ),['1HG','2HG','CD','OE1','OE2','HE2']],
           3: [('CB' , 'CG' , 'CD' , 'OE1'),['OE1','OE2','HE2']] },
         'PHE' :
         { 1: [('N'  , 'CA' , 'CB' , 'CG' ),['1HB', '2HB', 'CG' ,'CD1', 'HD1', 'CD2', 'HD2', 'CE1', 'HE1', 'CE2', 'HE2', 'CZ', 'HZ']],
@@ -65,8 +65,8 @@ _aa_chi = { 'CYS' :
           2: [('CA' , 'CB' , 'CG' , 'ND1'),['CD2',  'ND1',  'HD2',  'HD1',  'NE2',  'CE1',  'HE2', 'HE1']] },
         'ILE' :
         { 1: [('N'  , 'CA' , 'CB' , 'CG1'),['HB','CG1','1HG1','2HG1','CG2','1HG2','2HG2','3HG2','CD1','1HD1','2HD1','3HD1']],
-#          2: [('CA' , 'CB' , 'CG1', 'CD1'),['1HG1','1HG2','CG2','1HG2','2HG2','3HG2','CD1','1HD1','2HD1','3HD1']] }, 
-          2: [('CA' , 'CB' , 'CG1', 'CD1'),['1HG1','2HG1','CD1','1HD1','2HD1','3HD1']] }, 
+#          2: [('CA' , 'CB' , 'CG1', 'CD1'),['1HG1','1HG2','CG2','1HG2','2HG2','3HG2','CD1','1HD1','2HD1','3HD1']] },
+          2: [('CA' , 'CB' , 'CG1', 'CD1'),['1HG1','2HG1','CD1','1HD1','2HD1','3HD1']] },
         'LYS' :
         { 1: [('N'  , 'CA' , 'CB'  ,'CG' ),['1HB','2HB','CG','1HG','2HG','CD','1HD','2HD','CE','1HE','2HE','NZ','1HZ','2HZ','3HZ']],
           2: [('CA' , 'CB' , 'CG'  ,'CD' ),['1HG','2HG','CD','1HD','2HD','CE','1HE','2HE','NZ','1HZ','2HZ','3HZ']],
@@ -79,7 +79,7 @@ _aa_chi = { 'CYS' :
           4: [('CG' , 'CD' , 'CE'  ,'NZ' ),['1HE','2HE','NZ','1HZ','2HZ']] },
         'LEU' :
         { 1: [('N'  , 'CA' , 'CB' , 'CG' ),['1HB','2HB','CG', 'HG','CD1','1HD1','2HD1','3HD1','CD2','1HD2','2HD2','3HD2']],
-          2: [('CA' , 'CB' , 'CG' , 'CD1'), ['HG','CD1','1HD1','2HD1','3HD1','CD2','1HD2','2HD2','3HD2']]}, 
+          2: [('CA' , 'CB' , 'CG' , 'CD1'), ['HG','CD1','1HD1','2HD1','3HD1','CD2','1HD2','2HD2','3HD2']]},
         'MET' :
         { 1: [('N'  , 'CA' , 'CB'  ,'CG' ),['1HB', '2HB', 'CG', '1HG', '2HG', 'SD', 'CE', '1HE', '2HE', '3HE']],
           2: [('CA' , 'CB' , 'CG'  ,'SD' ),['1HG', '2HG', 'SD', 'CE', '1HE', '2HE', '3HE']],
@@ -89,7 +89,7 @@ _aa_chi = { 'CYS' :
           2: [('CA' , 'CB' , 'CG' , 'OD1'), ['OD1','ND2','1HD2','2HD2']]},
         'PRO' :
         { 1: [('N'  , 'CA' , 'CB' , 'CG' ),[]],
-          2: [('CA' , 'CB' , 'CG' , 'CD' ), []]}, 
+          2: [('CA' , 'CB' , 'CG' , 'CD' ), []]},
         'GLN' :
         { 1: [('N'  , 'CA' , 'CB' , 'CG' ),['1HB','2HB','CG','1HG','2HG','CD','OE1','NE2','1HE2','2HE2']],
           2: [('CA' , 'CB' , 'CG' , 'CD' ), ['1HG','2HG','CD','OE1','NE2','1HE2','2HE2']],
@@ -255,6 +255,3 @@ def mutate( residue, new_aa, bbdep):
     rotamers = get_rotamers( bbdep, new_aa, phi, psi, residue=residue, full = True, hydrogens = False)
     new_r = select_best_rotamer(m, rotamers)
     m.replace_residue( residue, new_r )
-    
-
-

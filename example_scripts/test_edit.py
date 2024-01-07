@@ -17,11 +17,11 @@ m = Model('protein.pdb')
 
 for atom in m.atoms:
     print atom.id, atom.name, atom.resname
-    
+
 for resi in m.residues:
     if resi.resname in ['ALA','SER']:     # select some residues
         print resi
-        for atom in resi.atoms:            
+        for atom in resi.atoms:
             print atom.bfac                     # print some properties
 
 
@@ -41,4 +41,3 @@ for r in resl:
 resl = m.fetch_residues(["LEU","PHE"], inv = True)
 for r in resl:
     print 'not leu_or_phe:', r
-

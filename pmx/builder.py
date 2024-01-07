@@ -42,7 +42,7 @@ Usage:
     >>> ch = build_chain('FGHRTCV',ss='HHHHHHH') build as helix
     >>> ch = build_chain('FGHRTCV',dihedrals = ((phi1,psi1,omega1),(...)))
     build chain with defined dihedral angles
-    
+
 """
 import sys, os
 from library import pmx_data_file
@@ -61,12 +61,12 @@ def cross(x,y):
                   -x[1]*y[0]])
 
 
-    
+
 def add_bp(m, strand = None, bRNA=False):
     if strand:
-        N = len(strand)/2 
-	if bRNA:
-	    N = len(strand)
+        N = len(strand)/2
+        if bRNA:
+            N = len(strand)
     else:
         N = 1
 #    print N, len(strand)
@@ -219,7 +219,7 @@ def write_pdb_with_connect(mol, f, n = 1):
 
 def attach_group(atom, mol):
     master = atom.molecule
-    
+
     bb = atom.bonds[0]
     R = mol.fetch_atoms('R#')[0]
     bR = R.bonds[0]
@@ -454,5 +454,3 @@ def attach_aminoacid(mol, resname, hydrogens = True,
     set_psi(new,psi)
 
     return new
-
-

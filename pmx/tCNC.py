@@ -80,7 +80,7 @@ def make_lib_dic(f):
         print "\t},"
     print "}"
 
-                
+
 def assign_types(model,verbose=False):
     atom_types = library._atom_types
     # default first
@@ -111,7 +111,7 @@ def assign_types(model,verbose=False):
                 if dic.has_key(name):
                     atom.atype = dic[name]['type']
                     atom.hyb = dic[name]['hyb']
-        
+
     # check if we got all
     # and do generic
     dic = atom_types['GENERIC']
@@ -125,8 +125,8 @@ def assign_types(model,verbose=False):
             else:
                 print 'Could not assign atom type to atom %d-%s/%d-%s' %\
                           (atom.id, atom.name, atom.resnr, atom.resname)
-            
-            
+
+
 def assign_radii(model):
     try:
         lst = open('Atomradii.dat').readlines()
@@ -152,7 +152,7 @@ def assign_radii(model):
         comb = parseList('ssf',comb)
         comb14 = readSection(lst,'[ 14_COMBINATIONS ]','[')
         comb14 = parseList('ssf',comb14)
-    
+
         size = len(tps)
         table = zeros((size,size))
         table14 = zeros((size,size))
@@ -171,9 +171,6 @@ def assign_radii(model):
             idx2 = types.index(c[1])
             table14[idx1][idx2] = c[2]
             table14[idx2][idx1] = c[2]
-        
+
         model.vdwtab = table
         model.vdw14tab = table14
-    
-
-

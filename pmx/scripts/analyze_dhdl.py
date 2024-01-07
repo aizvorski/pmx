@@ -61,7 +61,7 @@ def gauss_func(A, mean, dev, x):
 # Files Parsing
 # -------------
 def _longest_dgdl_file( lst ):
-    '''Takes a list of dgdl.xvg files and returns the id (starting from 0) of 
+    '''Takes a list of dgdl.xvg files and returns the id (starting from 0) of
     of the longest file.
 
     Parameters
@@ -320,7 +320,7 @@ def plot_work_dist(wf, wr, fname='Wdist.png', nbins=20, dG=None, dGerr=None,
     if 'B' in statesProvided:
         mb, devb, Ab = data2gauss(wr)
 
-    if 'AB' in statesProvided: 
+    if 'AB' in statesProvided:
         mini = min(wf+wr)
         maxi = max(wf+wr)
         sm1 = smooth(np.array(wf))
@@ -660,13 +660,13 @@ def main(args):
         if (args.filesAB is None) and (args.filesBA is None):
             exit('Need to provide dhdl.xvg files or integrated work values')
         elif args.filesAB is None:
-                statesProvided = 'B'
-                _tee(out, 'Only one directional Jarzynski estimator will be used')
-                filesBA = natural_sort(args.filesBA)
-        elif args.filesBA is None: 
-                statesProvided = 'A'
-                _tee(out, 'Only one directional Jarzynski estimator will be used')
-                filesAB = natural_sort(args.filesAB)
+            statesProvided = 'B'
+            _tee(out, 'Only one directional Jarzynski estimator will be used')
+            filesBA = natural_sort(args.filesBA)
+        elif args.filesBA is None:
+            statesProvided = 'A'
+            _tee(out, 'Only one directional Jarzynski estimator will be used')
+            filesAB = natural_sort(args.filesAB)
         else:
             filesAB = natural_sort(args.filesAB)
             filesBA = natural_sort(args.filesBA)
@@ -937,7 +937,7 @@ def main(args):
                                                                                     p=prec, u=units))
 
         if nblocks > 1:
-	    if 'A' in statesProvided:
+            if 'A' in statesProvided:
                 _tee(out, '  JARZ: Std Err Forward (blocks) = {e:8.{p}f} {u}'.format(e=jarz.err_blocks_for*unit_fact,
                                                                                  p=prec, u=units))
             if 'B' in statesProvided:
@@ -953,29 +953,29 @@ def main(args):
         if args.pickle:
             pickle.dump(jarzGauss, open("jarz_gauss_results.pkl", "wb"))
 
-	if 'A' in statesProvided:
+        if 'A' in statesProvided:
             _tee(out, '  JARZ_Gauss: dG Forward = {dg:8.{p}f} {u}'.format(dg=jarzGauss.dg_for*unit_fact,
                                                                     p=prec, u=units))
-	if 'B' in statesProvided:
+        if 'B' in statesProvided:
             _tee(out, '  JARZ_Gauss: dG Reverse = {dg:8.{p}f} {u}'.format(dg=jarzGauss.dg_rev*unit_fact,
                                                                     p=prec, u=units))
-	if 'AB' in statesProvided:
+        if 'AB' in statesProvided:
             _tee(out, '  JARZ_Gauss: dG Mean    = {dg:8.{p}f} {u}'.format(dg=(jarzGauss.dg_for+jarzGauss.dg_rev)/2.0*unit_fact,
                                                                     p=prec, u=units))
-	if 'A' in statesProvided:
+        if 'A' in statesProvided:
             _tee(out, '  JARZ_Gauss: Std Err (analytical) Forward = {dg:8.{p}f} {u}'.format(dg=jarzGauss.err_for*unit_fact,
                                                                     p=prec, u=units))
-	if 'B' in statesProvided:
+        if 'B' in statesProvided:
             _tee(out, '  JARZ_Gauss: Std Err (analytical) Reverse = {dg:8.{p}f} {u}'.format(dg=jarzGauss.err_rev*unit_fact,
                                                                     p=prec, u=units))
         if nboots > 0:
-	    if 'A' in statesProvided:
+            if 'A' in statesProvided:
                 _tee(out, '  JARZ_Gauss: Std Err Forward (bootstrap) = {e:8.{p}f} {u}'.format(e=jarzGauss.err_boot_for*unit_fact, p=prec, u=units))
-	    if 'B' in statesProvided:
+            if 'B' in statesProvided:
                 _tee(out, '  JARZ_Gauss: Std Err Reverse (bootstrap) = {e:8.{p}f} {u}'.format(e=jarzGauss.err_boot_rev*unit_fact,p=prec, u=units))
 
         if nblocks > 1:
-	    if 'A' in statesProvided:
+            if 'A' in statesProvided:
                 _tee(out, '  JARZ_Gauss: Std Err Forward (blocks) = {e:8.{p}f} {u}'.format(e=jarzGauss.err_blocks_for*unit_fact,p=prec, u=units))
             if 'B' in statesProvided:
                 _tee(out, '  JARZ_Gauss: Std Err Reverse (blocks) = {e:8.{p}f} {u}'.format(e=jarzGauss.err_blocks_rev*unit_fact,p=prec, u=units))

@@ -50,7 +50,7 @@ def ffopen(filename,mode='r',backup = True):
             return fp
         except:
             print 'Error: Could not open file %s' % filename
-                
+
     elif mode == 'r':
         try:
             fp = open(filename,'r')
@@ -60,13 +60,13 @@ def ffopen(filename,mode='r',backup = True):
 
     else:
         return open(filename,mode)
-    
+
 #=========================================
 
 
 def listFiles(dir='./',ext=None,abs=True,\
               backups = False):
-    
+
     """ returns a list of files in
     directory dir, optionally only
     certain file types"""
@@ -89,7 +89,7 @@ def listFiles(dir='./',ext=None,abs=True,\
                         fl.append(dir+f)
                 else:
                     fl.append(dir+f)
-                    
+
     elif type(ext) in [types.ListType,\
                        types.TupleType]:
         for ex in ext:
@@ -113,10 +113,10 @@ def listFiles(dir='./',ext=None,abs=True,\
         for f in fl:
             new.append(f.split('/')[-1])
         return new
-    
+
     return fl
-                          
-        
+
+
 #=========================================
 
 def listDirs(dir='./'):
@@ -138,8 +138,8 @@ def listDirs(dir='./'):
             dl.append(dir+f)
 
     return dl
-    
-        
+
+
 #=========================================
 
 def killBackups(arg,dirname,fname):
@@ -154,7 +154,7 @@ def killBackups(arg,dirname,fname):
 #=========================================
 
 def removeBackups(dir,check=True):
-    
+
     if dir[-1]!=os.sep: dir+=os.sep
     if dir[0]=='~':
         home = os.environ.get('HOME')
@@ -162,6 +162,3 @@ def removeBackups(dir,check=True):
     dir = os.path.abspath(dir)+os.sep
 
     os.path.walk(dir,killBackups,(False,True,True,check))
-
-
-

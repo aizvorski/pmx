@@ -37,7 +37,7 @@ from numpy import *
 
 class Histogram:
     """ class to store data as histogram """
-    
+
     def __init__(self,begin,end,incr):
         """ initialize histogram (start, end, increment)"""
         self.values=arange(begin,end,incr)
@@ -56,7 +56,7 @@ class Histogram:
                        x<self.values[i+1]:
                     self.counter[self.values[i]]+=weight
                     break
-            
+
     def write(self,filename=None):
         """ write histogram data to stdout or file"""
         if not filename:
@@ -98,9 +98,9 @@ class Histogram:
                     elif value > min_val:
                         list.append(self.counter[value])
                         x.append( value)
-                        
+
         return trapz(list,x=x)
-        
+
 
     def mean(self):
         """ calculate the mean value"""
@@ -143,6 +143,3 @@ if __name__=='__main__':
     print 'norming histogram....'
     h.norm()
     print 'new integral', h.integ()
-    
-
-

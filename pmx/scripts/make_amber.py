@@ -47,7 +47,7 @@ def chain_type(ch):
     elif ch.residues[0].resname in rna_res:
         return 'rna'
     else: return 'unk'
-    
+
 
 # describe what the script does
 
@@ -68,8 +68,8 @@ help_text =("This script reads a structure file",
 files= [
     FileOption("-f","r",["pdb"],"protein.pdb","Input pdb file"),
     FileOption("-o","w",["pdb","gro"],"amber.pdb","Input pdb/gro file"),
-]    
-   
+]
+
 
 # define options
 
@@ -112,7 +112,7 @@ for res in cysl:
         else:
             print 'Residue %d-%s (chain %s) will become %s' % (res.id, res.resname,res.chain_id,'CYM')
             res.set_resname('CYM')
-            
+
     else:
         res.set_resname('CYN')
         print 'Residue %d-%s (chain %s) will become %s' % (res.id, res.resname, res.chain_id, res.resname)
@@ -127,7 +127,7 @@ for res in lysl:
     if at or not at2:
         res.set_resname('LYP')
     print 'Residue %d-%s (chain %s) will become %s' % (res.id, 'LYS', res.chain_id, res.resname)
-        
+
 
 # histidine
 print 'Checking his......'
@@ -166,8 +166,8 @@ for res in glul:
     if hd2:
         res.set_resname('GLH')
     print 'Residue %d-%s (chain %s) will become %s' % (res.id, 'GLU', res.chain_id, res.resname)
-        
-        
+
+
 
 print 'Checking termini.....'
 for chain in model.chains:
@@ -230,7 +230,7 @@ for chain in model.chains:
 
 
 
-        
+
 # hack to get pdb file with 4 character residue names
 #for atom in model.atoms:
 #    atom.chain_id = ' '
@@ -238,8 +238,6 @@ for chain in model.chains:
 #        atom.chain_id = atom.resname[-1]+atom.chain_id
 model.write(cmdl['-o'])
 ## fp = open(cmdl['-o'],'w')
-## print 'Writing ouput to: %s' % cmdl['-o'] 
+## print 'Writing ouput to: %s' % cmdl['-o']
 ## for atom in model.atoms:
 ##     print >>fp, atom
-
-

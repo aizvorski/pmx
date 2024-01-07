@@ -44,7 +44,7 @@ from ffparser import *
 import _pmx as _p
 
 def TR ( s ):
-    print "pmx.forcefield_> " + s 
+    print "pmx.forcefield_> " + s
 
 #def cpp_parse_file(fn,cpp_defs=[],cpp_path=[os.environ.get('GMXDATA')+'/top'] ):
 def cpp_parse_file(fn,cpp_defs=[],cpp_path=[os.environ.get('GMXLIB')], itp=False, ffpath=None ):
@@ -57,17 +57,17 @@ def cpp_parse_file(fn,cpp_defs=[],cpp_path=[os.environ.get('GMXLIB')], itp=False
         incs.append('-I%s' % i)
     if itp:
         cmd1 = 'cpp -traditional %s %s %s ' % (' '.join(defs),' '.join(incs),fn)
-	l1 = os.popen(cmd1,'r').readlines()
-	if ffpath != None:
-	    ffname = ffpath+'/forcefield.itp'
+        l1 = os.popen(cmd1,'r').readlines()
+        if ffpath != None:
+            ffname = ffpath+'/forcefield.itp'
             cmd2 = 'cpp -traditional %s %s %s ' % (' '.join(defs),' '.join(incs),ffname)
-	    l2 = os.popen(cmd2,'r').readlines()
-	    return(l1+l2)
-	else:
-	    return(l1)
+            l2 = os.popen(cmd2,'r').readlines()
+            return(l1+l2)
+        else:
+            return(l1)
     else:
         cmd = 'cpp -traditional %s %s %s ' % (' '.join(defs),' '.join(incs),fn)
-    	return os.popen(cmd,'r').readlines()
+        return os.popen(cmd,'r').readlines()
 
 
 
@@ -93,7 +93,7 @@ class TopolBase:
         self.constraints = []
         self.have_constraints = False
         self.pairs = []
-	self.cmap  = []
+        self.cmap  = []
         self.angles = []
         self.dihedrals = []
         self.virtual_sites2 = []
@@ -102,12 +102,12 @@ class TopolBase:
         self.has_vsites2 = False
         self.has_vsites3 = False
         self.has_vsites4 = False
-	self.has_posre = False
+        self.has_posre = False
         self.has_exclusions = False
         self.exclusions = []
         self.has_ii = False # intermolecular_interactions
         self.ii = {} # ii is a dictionary, which containts bonds, angles, dihedrals
-	self.posre = []
+        self.posre = []
         self.molecules = []
         self.system = ''
         self.qA = 0.
@@ -116,7 +116,7 @@ class TopolBase:
             self.read()
     #===============================================================================
     # read functions
-    
+
     def read( self ):
         lines = open(self.filename).readlines()
         lines = kickOutComments(lines,';')
@@ -140,12 +140,12 @@ class TopolBase:
             self.read_vsites4(lines)
             self.read_exclusions(lines)
             if self.has_posre:
-	        self.read_posre(posre_sections)
+                self.read_posre(posre_sections)
             self.__make_residues()
         if not self.is_itp:
             self.read_system(lines)
             self.read_molecules(lines)
-            
+
     def __atom_from_top_line(self, line):
         entr = line.split()
         idx = int(entr[0])
@@ -204,7 +204,7 @@ class TopolBase:
         self.residues.append( mol )
         for r in self.residues:
             atom.molecule = r
-            
+
 
 
     def read_system(self,lines):
@@ -239,7 +239,7 @@ class TopolBase:
         if len(lst)>0:
             self.has_atomtypes = True
         self.atomtypes = lst
-                    
+
     def read_header(self, lines):
         ret = []
         for line in lines:
@@ -290,14 +290,14 @@ class TopolBase:
                 lB = float(entries[5])
                 kB = float(entries[6])
                 self.bonds.append([self.atoms[idx[0]-1], self.atoms[idx[1]-1], idx[2], [idx[2],lA,kA],[idx[2],lB,kB]])
-            
+
     def read_pairs(self,lines):
         lst = readSection(lines,'[ pairs ]','[')
         self.pairs = []
         for line in lst:
             idx = [int(x) for x in line.split()]
             self.pairs.append([self.atoms[idx[0]-1], self.atoms[idx[1]-1], idx[2]])
-        
+
     def read_constraints(self,lines):
         lst = readSection(lines,'[ constraints ]','[')
         self.constraints = []
@@ -306,7 +306,7 @@ class TopolBase:
             self.constraints.append([self.atoms[idx[0]-1], self.atoms[idx[1]-1], idx[2]])
         if self.constraints:
             self.have_constraints = True
-            
+
     def read_angles(self, lines):
         lst = readSection(lines,'[ angles ]','[')
         angles = []
@@ -337,7 +337,7 @@ class TopolBase:
                 lA2 = float(entries[6])
                 kA2 = float(entries[7])
                 self.angles.append([self.atoms[idx[0]-1], \
-			self.atoms[idx[1]-1],self.atoms[idx[2]-1],idx[3],[idx[3],lA1,kA1,lA2,kA2]])
+                        self.atoms[idx[1]-1],self.atoms[idx[2]-1],idx[3],[idx[3],lA1,kA1,lA2,kA2]])
             elif len(entries) == 12:
                 idx = [int(x) for x in entries[:4]]
                 lA1 = float(entries[4])
@@ -350,8 +350,8 @@ class TopolBase:
                 kB2 = float(entries[11])
                 self.angles.append([self.atoms[idx[0]-1], self.atoms[idx[1]-1], \
                                     self.atoms[idx[2]-1], idx[3],\
-				    [idx[3],lA1,kA1,lA2,kA2],[idx[3],lB1,kB1,lB2,kB2]])
-                
+                                    [idx[3],lA1,kA1,lA2,kA2],[idx[3],lB1,kB1,lB2,kB2]])
+
     def read_dihedrals(self, lines):
         starts = []
         dih = []
@@ -363,7 +363,7 @@ class TopolBase:
             for line in lst:
                 entr = line.split()
                 idx = [int(x) for x in entr[:4]]
-                
+
                 func = int(entr[4])
                 try:
                     rest = ' '.join(entr[5:])
@@ -374,8 +374,8 @@ class TopolBase:
                                        self.atoms[idx[2]-1],\
                                        self.atoms[idx[3]-1],\
                                        func,rest])
-#		foo = (self.atoms[idx[0]-1],self.atoms[idx[1]-1],self.atoms[idx[2]-1],self.atoms[idx[3]-1],func,rest)
-#		print 'length %d' % len(foo)
+#               foo = (self.atoms[idx[0]-1],self.atoms[idx[1]-1],self.atoms[idx[2]-1],self.atoms[idx[3]-1],func,rest)
+#               print 'length %d' % len(foo)
     def read_cmap(self, lines):
         starts = []
         cmap = []
@@ -387,7 +387,7 @@ class TopolBase:
             for line in lst:
                 entr = line.split()
                 idx = [int(x) for x in entr[:5]]
-                
+
                 func = int(entr[5])
                 try:
                     rest = ' '.join(entr[6:])
@@ -399,8 +399,8 @@ class TopolBase:
                                        self.atoms[idx[3]-1],\
                                        self.atoms[idx[4]-1],\
                                        func,rest])
-#		foo = (self.atoms[idx[0]-1],self.atoms[idx[1]-1],self.atoms[idx[2]-1],self.atoms[idx[3]-1],func,rest)
-#		print 'length %d' % len(foo)
+#               foo = (self.atoms[idx[0]-1],self.atoms[idx[1]-1],self.atoms[idx[2]-1],self.atoms[idx[3]-1],func,rest)
+#               print 'length %d' % len(foo)
 
     def read_exclusions(self, lines):
         starts = []
@@ -430,7 +430,7 @@ class TopolBase:
             for line in lst:
                 entr = line.split()
                 idx = [int(x) for x in entr[:3]]
-                
+
                 func = int(entr[3])
                 try:
                     rest = ' '.join(entr[4:])
@@ -454,7 +454,7 @@ class TopolBase:
             for line in lst:
                 entr = line.split()
                 idx = [int(x) for x in entr[:4]]
-                
+
                 func = int(entr[4])
                 try:
                     rest = ' '.join(entr[5:])
@@ -479,7 +479,7 @@ class TopolBase:
             for line in lst:
                 entr = line.split()
                 idx = [int(x) for x in entr[:5]]
-                
+
                 func = int(entr[5])
                 try:
                     rest = ' '.join(entr[6:])
@@ -522,8 +522,8 @@ class TopolBase:
             lst = lstList[lstKey]
             for line in lst:
                 entr = line.split()
-		idx = int(entr[0])
-                
+                idx = int(entr[0])
+
                 func = int(entr[1])
                 try:
                     rest = ' '.join(entr[2:])
@@ -562,7 +562,7 @@ class TopolBase:
             self.write_pairs(fp)
             self.write_angles(fp, state = stateBonded)
             self.write_dihedrals(fp, state = stateBonded)
-	    self.write_cmap(fp)
+            self.write_cmap(fp)
             if self.has_vsites2:
                 self.write_vsites2(fp)
             if self.has_vsites3:
@@ -571,8 +571,8 @@ class TopolBase:
                 self.write_vsites4(fp)
             if self.has_exclusions:
                 self.write_exclusions(fp)
-	    if self.has_posre:
-		self.write_posre(fp)
+            if self.has_posre:
+                self.write_posre(fp)
         if not is_out_itp:
             self.write_footer(fp)
             self.write_system(fp)
@@ -588,11 +588,11 @@ class TopolBase:
             print >>fp, line
 
     def write_footer(self,fp):
-	try:
+        try:
             for line in self.footer:
                 print >>fp, line
-	except:
-	    print "No footer in itp\n"
+        except:
+            print "No footer in itp\n"
 
     def write_moleculetype(self, fp):
         print >>fp, '[ moleculetype ]'
@@ -767,13 +767,13 @@ class TopolBase:
         print >>fp,'\n [ constraints ]'
         print >>fp, ';  ai    aj funct            c0            c1            c2            c3'
         for p in self.constraints:
-	    if(len(p)==3):
+            if(len(p)==3):
                 print >>fp, '%6d %6d %6d' % (p[0].id, p[1].id, p[2])
-	    else:
+            else:
                 print >>fp, '%6d %6d %6d %8s' % (p[0].id, p[1].id, p[2], p[3])
 
     def write_angles(self,fp, state='AB'):
-        print >>fp,'\n [ angles ]'    
+        print >>fp,'\n [ angles ]'
         print >>fp, ';  ai    aj    ak funct            c0            c1            c2            c3'
         for ang in self.angles:
             if len(ang) == 4:
@@ -781,21 +781,21 @@ class TopolBase:
             else:
                 if state == 'A':
                     if ang[3]==1 :
-			print >>fp, '%6d %6d %6d %6d %14.6f %14.6f' % (ang[0].id, ang[1].id, ang[2].id,ang[3],ang[4][0],ang[4][1])
+                        print >>fp, '%6d %6d %6d %6d %14.6f %14.6f' % (ang[0].id, ang[1].id, ang[2].id,ang[3],ang[4][0],ang[4][1])
                     elif ang[3]==5 :
-			if shape(ang[4])[0]==4:
-			    print >>fp, '%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f' % (ang[0].id, ang[1].id, ang[2].id,ang[3],ang[4][0],ang[4][1],ang[4][2],ang[4][3])
-			else:
-			    print >>fp, '%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f' % (ang[0].id, ang[1].id, ang[2].id,ang[3],ang[4][1],ang[4][2],ang[4][3],ang[4][4])
+                        if shape(ang[4])[0]==4:
+                            print >>fp, '%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f' % (ang[0].id, ang[1].id, ang[2].id,ang[3],ang[4][0],ang[4][1],ang[4][2],ang[4][3])
+                        else:
+                            print >>fp, '%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f' % (ang[0].id, ang[1].id, ang[2].id,ang[3],ang[4][1],ang[4][2],ang[4][3],ang[4][4])
                     else :
                         print "Don't know how to print angletype %d" % ang[3]
                         exit()
                 if state == 'AB':
-#		    print ang[0].id, ang[1].id, ang[2].id
-#		    print state
-#	            print ang
-		    #MS check type here, for charmm its different, Urey-Bradley
-		    if ang[3]==1 :
+#                   print ang[0].id, ang[1].id, ang[2].id
+#                   print state
+#                   print ang
+                    #MS check type here, for charmm its different, Urey-Bradley
+                    if ang[3]==1 :
                         # two possibilities: angle actually has a B-state or there is A state only
                         if(len(ang)>5): # B-state exists
                             print >>fp, '%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f ; %s %s %s' % \
@@ -803,57 +803,57 @@ class TopolBase:
                                ang[4][2], ang[5][1], ang[5][2], ang[0].name, ang[1].name, ang[2].name)
                         else: # A-state only
                             print >>fp, '%6d %6d %6d %6d %14.6f %14.6f' % (ang[0].id, ang[1].id, ang[2].id,ang[3], ang[4][0], ang[4][1])
-	
-	            elif ang[3]==5:
+
+                    elif ang[3]==5:
                         # two possibilities: angle actually has a B-state or there is A state only
                         if(len(ang)>5): # B-state exists
                             print >>fp, '%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f %14.6f %14.6f %14.6f %14.6f ; %s %s %s' % \
                               (ang[0].id, ang[1].id, ang[2].id,ang[3], ang[4][1], \
                                ang[4][2], ang[4][3], ang[4][4], ang[5][1], \
-	    		       ang[5][2], ang[5][3], ang[5][4], \
-			       ang[0].name, ang[1].name, ang[2].name)
+                               ang[5][2], ang[5][3], ang[5][4], \
+                               ang[0].name, ang[1].name, ang[2].name)
                         else: # A-state only
                             print >>fp, '%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f' % (ang[0].id, ang[1].id, ang[2].id,ang[3], ang[4][1],ang[4][2], ang[4][3], ang[4][4] )
-		    else :
-		        print "Don't know how to print angletype %d" % ang[3]
-		        exit()
+                    else :
+                        print "Don't know how to print angletype %d" % ang[3]
+                        exit()
                 elif state == 'AA':
-		    if ang[3]==1 :
+                    if ang[3]==1 :
                         print >>fp, '%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f ; %s %s %s' % \
                           (ang[0].id, ang[1].id, ang[2].id,ang[3], ang[4][1], \
                            ang[4][2], ang[4][1], ang[4][2], ang[0].name, ang[1].name, ang[2].name)
-	            elif ang[3]==5:
+                    elif ang[3]==5:
                         print >>fp, '%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f %14.6f %14.6f %14.6f %14.6f ; %s %s %s' % \
                           (ang[0].id, ang[1].id, ang[2].id,ang[3], ang[4][1], \
                            ang[4][2], ang[4][3], ang[4][4], ang[4][1], \
-			   ang[4][2], ang[4][3], ang[4][4], \
-			   ang[0].name, ang[1].name, ang[2].name)
-		    else :
-		        print "Don't know how to print angletype %d" % ang[3]
-		        exit()
+                           ang[4][2], ang[4][3], ang[4][4], \
+                           ang[0].name, ang[1].name, ang[2].name)
+                    else :
+                        print "Don't know how to print angletype %d" % ang[3]
+                        exit()
                 elif state == 'BB':
-		    if ang[3]==1 :
+                    if ang[3]==1 :
                         print >>fp, '%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f ; %s %s %s' % \
                           (ang[0].id, ang[1].id, ang[2].id,ang[3], ang[5][1], \
                            ang[5][2], ang[5][1], ang[5][2], ang[0].name, ang[1].name, ang[2].name)
-	            elif ang[3]==5:
+                    elif ang[3]==5:
                         print >>fp, '%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f %14.6f %14.6f %14.6f %14.6f ; %s %s %s' % \
                           (ang[0].id, ang[1].id, ang[2].id,ang[3], ang[5][1], \
                            ang[5][2], ang[5][3], ang[5][4], ang[5][1], \
-			   ang[5][2], ang[5][3], ang[5][4], \
-			   ang[0].name, ang[1].name, ang[2].name)
-		    else :
-		        print "Don't know how to print angletype %d" % ang[3]
-		        exit()
+                           ang[5][2], ang[5][3], ang[5][4], \
+                           ang[0].name, ang[1].name, ang[2].name)
+                    else :
+                        print "Don't know how to print angletype %d" % ang[3]
+                        exit()
 
     def write_cmap(self, fp):
-        print >>fp,'\n [ cmap ]'    
+        print >>fp,'\n [ cmap ]'
         print >>fp,';  ai    aj    ak    al    am funct'
         for d in self.cmap:
             print >>fp, "%6d %6d %6d %6d %6d %4d" % ( d[0].id, d[1].id, d[2].id,d[3].id,d[4].id,d[5])
 
     def write_dihedrals(self, fp, state='AB'):
-        print >>fp,'\n [ dihedrals ]'    
+        print >>fp,'\n [ dihedrals ]'
         print >>fp,';  ai    aj    ak    al funct            c0            c1            c2            c3            c4            c5'
         for d in self.dihedrals:
             if len(d) == 5:
@@ -876,19 +876,19 @@ class TopolBase:
                         ast = ' '.join(["%g" % x for x in [0,0,0]])
                     elif d[4] == 2:
                         ast = ' '.join(["%g" % x for x in [0,0]])
-                        
+
                 elif ast != 'NULL' and hasattr(ast,"append"):
                     ast = ' '.join(["%.10g" % x for x in d[5][1:]])
                 if bs == 'NULL':
                     if d[4] == 3:
-                        bs = ' '.join(["%g" % x for x in [0,0,0,0,0,0]]) 
+                        bs = ' '.join(["%g" % x for x in [0,0,0,0,0,0]])
                     elif d[4] == 1 or d[4] == 4:
                         bs = ' '.join(["%g" % x for x in [0,0,0]])
                     elif d[4] == 9:
                         bs = ' '.join(["%g" % x for x in [0,0,0]])
                     elif d[4] == 2:
                         bs = ' '.join(["%g" % x for x in [0,0]])
-                    
+
                 elif bs !='NULL' and hasattr(bs,"append"):
                     bs = ' '.join(["%.10g" % x for x in d[6][1:]])
                 if state == 'AB':
@@ -913,7 +913,7 @@ class TopolBase:
             print >>fp, "%s" % towrite
 
     def write_vsites2(self, fp):
-        print >>fp,'\n [ virtual_sites2 ]'    
+        print >>fp,'\n [ virtual_sites2 ]'
         print >>fp,';  ai    aj    ak  funct            c0            c1'
         for vs in self.virtual_sites2:
             if len(vs) == 4:
@@ -927,7 +927,7 @@ class TopolBase:
 
 
     def write_vsites3(self, fp):
-        print >>fp,'\n [ virtual_sites3 ]'    
+        print >>fp,'\n [ virtual_sites3 ]'
         print >>fp,';  ai    aj    ak    al funct            c0            c1'
         for vs in self.virtual_sites3:
             if len(vs) == 5:
@@ -940,7 +940,7 @@ class TopolBase:
                 sys.exit(1)
 
     def write_vsites4(self, fp):
-        print >>fp,'\n [ virtual_sites4 ]'    
+        print >>fp,'\n [ virtual_sites4 ]'
         print >>fp,';  ai    aj    ak    al    am  funct            c0            c1          c2'
         for vs in self.virtual_sites4:
             if len(vs) == 6:
@@ -953,7 +953,7 @@ class TopolBase:
                 sys.exit(1)
 
     def write_posre(self, fp):
-        print >>fp,'\n [ position_restraints ]'    
+        print >>fp,'\n [ position_restraints ]'
         print >>fp,';  ai    funct            c0            c1          c2'
         for pr in self.posre:
             if len(pr) == 3:
@@ -967,31 +967,31 @@ class TopolBase:
         fp.write('\n [ intermolecular_interactions ]\n')
         # bonds
         if 'bonds' in self.ii.keys():
-           fp.write(' [ bonds ]\n')
-           for b in self.ii['bonds']: 
-               fp.write('%6d %6d %6d' % ( b[0].id, b[1].id, b[2] ))
-               if len(b)>3: 
-                   for x in b[3]:
-                       fp.write(' %14.6f' % x)
-               fp.write('\n')
+            fp.write(' [ bonds ]\n')
+            for b in self.ii['bonds']:
+                fp.write('%6d %6d %6d' % ( b[0].id, b[1].id, b[2] ))
+                if len(b)>3:
+                    for x in b[3]:
+                        fp.write(' %14.6f' % x)
+                fp.write('\n')
         # angles
         if 'angles' in self.ii.keys():
-           fp.write(' [ angles ]\n')
-           for ang in self.ii['angles']: 
-               fp.write('%6d %6d %6d %6d' % ( ang[0].id, ang[1].id, ang[2].id, ang[3] ))
-               if len(ang)>4: 
-                   for x in ang[4]:
-                       fp.write(' %14.6f' % x)
-               fp.write('\n')
+            fp.write(' [ angles ]\n')
+            for ang in self.ii['angles']:
+                fp.write('%6d %6d %6d %6d' % ( ang[0].id, ang[1].id, ang[2].id, ang[3] ))
+                if len(ang)>4:
+                    for x in ang[4]:
+                        fp.write(' %14.6f' % x)
+                fp.write('\n')
         # dihedrals
         if 'dihedrals' in self.ii.keys():
-           fp.write(' [ dihedrals ]\n')
-           for dih in self.ii['dihedrals']: 
-               fp.write('%6d %6d %6d %6d %6d' % ( dih[0].id, dih[1].id, dih[2].id, dih[3].id, dih[4] ))
-               if len(dih)>5: 
-                   for x in dih[5]:
-                       fp.write(' %14.6f' % x)
-               fp.write('\n')
+            fp.write(' [ dihedrals ]\n')
+            for dih in self.ii['dihedrals']:
+                fp.write('%6d %6d %6d %6d %6d' % ( dih[0].id, dih[1].id, dih[2].id, dih[3].id, dih[4] ))
+                if len(dih)>5:
+                    for x in dih[5]:
+                        fp.write(' %14.6f' % x)
+                fp.write('\n')
 
     def write_system(self,fp):
         print >>fp, '[ system ]'
@@ -1007,16 +1007,16 @@ class TopolBase:
     #    other functions
 
     def __check_case(self, atoms):
-            A = ''
-            B = ''
-            for a in atoms:
-                if a.atomtype.startswith('DUM'): A += 'D'
-                else: A += 'A'
-                if a.atomtypeB is not None:
-                    if a.atomtypeB.startswith('DUM'): B += 'D'
-                    else: B += 'A'
+        A = ''
+        B = ''
+        for a in atoms:
+            if a.atomtype.startswith('DUM'): A += 'D'
+            else: A += 'A'
+            if a.atomtypeB is not None:
+                if a.atomtypeB.startswith('DUM'): B += 'D'
                 else: B += 'A'
-            return A, B
+            else: B += 'A'
+        return A, B
 
 
     def __atoms_morphe( self, atoms ):
@@ -1028,11 +1028,11 @@ class TopolBase:
         for atom in atoms:
             if atom.atomtypeB is not None and atom.atomtype != atom.atomtypeB: return True
         return False
-    
+
     def __is_perturbed_residue( self, residue ):
         if self.__atoms_morphe(residue.atoms): return True
         return False
-        
+
     def __last_perturbed_atom(self, r):
 
         max_order = 0
@@ -1078,10 +1078,10 @@ class Topology( TopolBase ):
 #    def __init__(self, filename, topfile = None, assign_types = True, cpp_path = [os.environ.get('GMXDATA')+'/top'], cpp_defs = [], version = 'old', ff = 'amber' ):
     def __init__(self, filename, topfile = None, assign_types = True, cpp_path = [os.environ.get('GMXLIB')], cpp_defs = [], version = 'old', ff = 'amber', ffpath=None ):
         TopolBase.__init__(self, filename, version)
-	bItp = False
+        bItp = False
         if not topfile:
             topfile = filename
-	    bItp = True
+            bItp = True
         if assign_types:
             l = cpp_parse_file(topfile, cpp_defs = cpp_defs, cpp_path = cpp_path, itp = bItp, ffpath = ffpath)
             l = kickOutComments(l,'#')
@@ -1099,7 +1099,7 @@ class Topology( TopolBase ):
                 mol_exists = True
         if not mol_exists:
             self.molecules.append([molname,n])
-            
+
     def del_molecule(self, molname):
         if not hasattr(molname,"append"):
             molname = [molname]
@@ -1117,7 +1117,7 @@ class Topology( TopolBase ):
                 atom.typeB = self.NBParams.atomtypes[atom.atomtypeB]['bond_type']
             else:
                 atom.typeB = atom.type
-            
+
     def make_bond_params(self):
         for i, (at1,at2,func) in enumerate(self.bonds):
             param = self.BondedParams.get_bond_param(at1.type,at2.type)
@@ -1135,7 +1135,7 @@ class Topology( TopolBase ):
                       (at1.type, at2.type, at3.type)
                 sys.exit(1)
             self.angles[i].append(param[1:])
-            
+
     def make_dihedral_params(self):
         for i, d in enumerate(self.dihedrals):
             if d[5]!='': # we have a prefefined dihedral
@@ -1155,7 +1155,7 @@ class Topology( TopolBase ):
 
 
 #=================================================================================
-            
+
 class GAFFTopology( TopolBase ):
 
     def __init__(self, filename):
@@ -1173,11 +1173,11 @@ class GAFFTopology( TopolBase ):
         self.name = name
         for atom in self.atoms:
             atom.name = name
-            
-#=================================================================================
-        
 
-    
+#=================================================================================
+
+
+
 class MDPError(Exception):
     def __init__(self, s):
         self.s = s
@@ -1185,7 +1185,7 @@ class MDPError(Exception):
         return repr(self.s)
 
 #=================================================================================
-    
+
 class MDP:
 
     def __init__(self):
@@ -1363,13 +1363,13 @@ class MDP:
                 s = str(val)
             line+="%-25s = %s\n" % (key, s)
         return line
-            
+
     def __setitem__(self,item,value):
         if not self.parameters.has_key(item):
             raise MDPError, "No such option %s" % item
-        
+
         self.parameters[item] = value
-        
+
     def write(self, fp = None):
 
         if fp is None:
@@ -1424,7 +1424,7 @@ def make_amber_residue_names(model):
                 res.set_resname(rr)
             else:
                 res.set_resname('CYM')
-            
+
         else:
             res.set_resname('CYN')
     lysl = model.fetch_residues('LYS')
@@ -1493,7 +1493,7 @@ def assign_ffamber99sb_params(m):
     m.rename_atoms()
     for c in m.chains:
         c.make_residue_tree()
-        
+
     make_amber_residue_names( m)
     rtp = RTPParser('ffamber99sb.rtp')
     rtp.assign_params(m)
@@ -1502,7 +1502,7 @@ def assign_ffamber99sb_params(m):
     nb.assign_params( m )
     bo.assign_params( m )
     rtp.assign_dihedral_params( m, bo.directives )
-    
+
 
 #=================================================================================
 
@@ -1528,7 +1528,7 @@ def nb_energy( m ):
 
 def energy(m):
 
-    bond_ene = bond_energy( m ) 
+    bond_ene = bond_energy( m )
     angle_ene = angle_energy( m )
     dihedral_ene = dihedral_energy( m )
     improper_ene = improper_energy ( m )
@@ -1536,6 +1536,3 @@ def energy(m):
     coul14_ene = coul14_energy( m )
     nb_ene = nb_energy( m )
     return bond_ene + angle_ene + dihedral_ene + improper_ene + nb_ene + lj14_ene + coul14_ene
-
-
-

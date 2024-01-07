@@ -59,7 +59,7 @@ from rotamer import _aa_chi
 
 class Molecule(Atomselection):
     """ Storage class for a Molecule/residue"""
-    
+
     def __init__(self, **kwargs):
         Atomselection.__init__(self)
         self.natoms = 0
@@ -100,7 +100,7 @@ class Molecule(Atomselection):
             return True
         else:
             return False
-                
+
     def new_aa(self, aa, hydrogens = True):
         aa = aa.upper()
         if len(aa) == 1:
@@ -180,7 +180,7 @@ class Molecule(Atomselection):
                         rot_atoms.append( atom )
         for atom in rot_atoms:
             atom.x = R.apply(atom.x, diff)
-        
+
 
 
     def get_phi(self,degree=False):
@@ -192,7 +192,7 @@ class Molecule(Atomselection):
             previous = self.chain.residues[chidx-1]
         C = previous.fetchm(['C'])[0]
         N,CA,C2 = self.fetchm(['N','CA','C'])
-        dih = C.dihedral(N,CA,C2) 
+        dih = C.dihedral(N,CA,C2)
         if not degree:
             return dih
         else:
@@ -229,7 +229,7 @@ class Molecule(Atomselection):
                         rot_atoms.append( atom )
         for atom in rot_atoms:
             atom.x = R.apply(atom.x, diff)
-        
+
 
 
     def get_omega(self,degree=False):
@@ -240,7 +240,7 @@ class Molecule(Atomselection):
             next_mol = self.chain.residues[chidx+1]
         CA,C = self.fetchm(['CA','C'])
         N,CA2 = next_mol.fetchm(['N','CA'])
-        dih = CA.dihedral(C,N,CA2) 
+        dih = CA.dihedral(C,N,CA2)
         if not degree:
             return dih
         else:
@@ -283,7 +283,7 @@ class Molecule(Atomselection):
                     rot_atoms.append( atom )
         for atom in rot_atoms:
             atom.x = R.apply(atom.x, diff)
-        
+
 
     def nchi(self):
         self.get_real_resname()
@@ -302,7 +302,7 @@ class Molecule(Atomselection):
             return dih*180./pi
 
     def set_chi(self, chi, phi):
-        if chi > self.nchi(): return 
+        if chi > self.nchi(): return
         ang = self.get_chi(chi)
         dih_atoms = self.fetchm( _aa_chi[self.real_resname][chi][0] )
         rot_atoms = self.fetch_atoms( _aa_chi[self.real_resname][chi][1] )
@@ -317,12 +317,12 @@ class Molecule(Atomselection):
         for chi in range(nchi):
             self.set_chi(chi+1, rotamer[chi+1])
 
-        
+
     def set_resname(self,resname):
         self.resname = resname
         for atom in self.atoms:
             atom.resname = resname
-            
+
     def set_resid(self,resid):
         self.id = resid
         for atom in self.atoms:
@@ -336,11 +336,11 @@ class Molecule(Atomselection):
         self.chain = chain
         for atom in self.atoms:
             atom.chain = chain
-            
+
     def set_molecule(self):
         for atom in self.atoms:
             atom.molecule = self
-            
+
     def set_chain_id(self,chain_id):
         self.chain_id = chain_id
         for atom in self.atoms:
@@ -363,7 +363,7 @@ class Molecule(Atomselection):
                     idx_model = self.model.atoms.index(at)+1
                 if self.chain is not None:
                     idx_chain = self.chain.atoms.index(at)+1
-                
+
             else:
                 at = self.atoms[pos]
                 if self.model is not None:
@@ -401,7 +401,7 @@ class Molecule(Atomselection):
                 if atom.symbol == key:
                     result.append(atom)
         return result
-    
+
     def fetchm(self,keys,how='byname'):
         """select list of atom by name or element"""
         result = []
@@ -424,7 +424,7 @@ class Molecule(Atomselection):
         if self.model is not None:
             have_model = True
         else: have_model = False
-        
+
         aidx = self.atoms.index(atom)
         if have_chain:
             chidx = self.chain.atoms.index(atom)
@@ -440,7 +440,7 @@ class Molecule(Atomselection):
     def append(self,atom):
         """ attach atom at the end"""
         if not isinstance(atom,Atom):
-            raise TypeError, "%s is not an Atom instance" % str(atom) 
+            raise TypeError, "%s is not an Atom instance" % str(atom)
         else:
             n = len(self.atoms)
             if n == 0:
@@ -462,7 +462,7 @@ class Molecule(Atomselection):
                 if (n1,n2) in bl or (n2,n1) in bl:
                     atom.bonds.append(at)
                     at.bonds.append(atom)
-                    
+
 
     def get_mol2_types(self, nterminus = False):
         if not library._mol2_types.has_key(self.resname):
@@ -483,7 +483,7 @@ class Molecule(Atomselection):
                 else:
                     atom.atype = dic[atom.name][0]
                     atom.q = dic[atom.name][1]
-                
+
     def is_protein_residue(self):
         if self.resname in library._protein_residues:
             return True
@@ -506,7 +506,7 @@ class SDMolecule:
         self.name = ''
         self.name2 = ''
         self.read( lst )
-        
+
     def read( self, lst ):
         self.name = lst[0].strip()
         self.name2 = lst[1].rstrip()
@@ -537,7 +537,7 @@ class SDMolecule:
             print >>fp, '>', k
             print >>fp, v,
         print >>fp, '$$$$'
-        
+
 
 class SDFile:
 
@@ -583,7 +583,7 @@ class Mol2Molecule:
         self.__get_keys(lines)
         self.read(lines)
 
-        
+
     def __get_keys(self,lines):
         for line in lines:
             if line.startswith('@'):
@@ -609,10 +609,10 @@ class Mol2Molecule:
         self.num_substr = self.counts[2]
         self.num_feat = self.counts[3]
         self.num_sets = self.counts[4]
-        
+
         self.mol_type = lines[2].strip()
         self.charge_type = lines[3].strip()
-        
+
 
     def __parse_atoms(self):
         for line in self.atom_lines:
@@ -652,7 +652,7 @@ class Mol2Molecule:
             print >>fp, "%6d %6d %6d %6s" % ((i+1), b[0].id, b[1].id, b[2])
         for line in self.footer:
             print >>fp, line
-        
+
     def add_atom( self, atom ):
         n = len(self.atoms)+1
         atom.id = n
@@ -660,11 +660,11 @@ class Mol2Molecule:
         atom.rename = self.atoms[0].resname
         self.num_atoms+=1
         self.atoms.append( atom )
-        
+
     def add_bond(self, bond ):
         self.num_bonds+=1
         self.bonds.append( bond )
-        
+
 
 class Mol2File:
 
@@ -702,5 +702,3 @@ class Mol2File:
             m.write( fp )
         if file_opened:
             fp.close()
-            
-            

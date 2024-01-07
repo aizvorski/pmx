@@ -57,7 +57,7 @@ def get_angle_param(type1,type2,type3,ang_lib):
             type2 == entr[1] and \
             type3 == entr[0]):
             return entr[3:]
-    return None 
+    return None
 
 def get_dihedral_param(type1,type2,type3,type4,dih_lib, func):
     for entr in dih_lib:
@@ -119,7 +119,7 @@ def get_dihedral_param(type1,type2,type3,type4,dih_lib, func):
             'X' == entr[1] and \
             type4 == entr[0] and func==entr[4]):
             return entr[4:]
-    return None 
+    return None
 
 
 
@@ -143,7 +143,7 @@ class ITPFile:
         self.has_vsites4 = False
         if fname:
             self.read(fname, ff = ff)
-            
+
     def read(self,fname, ff = None):
         if not hasattr(fname,"readlines"):
             lines = open(fname).readlines()
@@ -160,7 +160,7 @@ class ITPFile:
         self.atomtypes = read_atomtypes(lines,ff)
         self.read_vsites2(lines)
 
-        
+
     def write(self,fname):
         if not hasattr(fname,"write"):
             fp = open(fname,"w")
@@ -178,17 +178,17 @@ class ITPFile:
             write_itp_dihedrals(fp, self.dihedrals)
         if self.has_vsites2:
             self.write_itp_vsites2(fp)
-            
+
     def write_itp_vsites2(self, fp ):
         print >>fp, '[ virtual_sites2 ]'
         for v in self.virtual_sites2:
             print >>fp, "%8d %8d %8d %s %s" % (v[0].id, v[1].id, v[2].id, v[3], v[4])
-        
+
     def set_name(self, name):
         self.name = name
         for atom in self.atoms:
             atom.resname = name
-        
+
     def as_rtp(self):
         for i, bond in enumerate(self.bonds):
             id1 = bond[0]
@@ -202,7 +202,7 @@ class ITPFile:
             self.angles[i][0] = self.atoms[id1-1]
             self.angles[i][1] = self.atoms[id2-1]
             self.angles[i][2] = self.atoms[id3-1]
-            
+
         for i, dih in enumerate(self.dihedrals):
             id1 = dih[0]
             id2 = dih[1]
@@ -230,7 +230,7 @@ class ITPFile:
             id2 = bond[1]
             self.bonds[i][0] = self.atoms[id1-1]
             self.bonds[i][1] = self.atoms[id2-1]
-            
+
         for i, pairs in enumerate(self.pairs):
             id1 = pairs[0]
             id2 = pairs[1]
@@ -244,7 +244,7 @@ class ITPFile:
             self.angles[i][0] = self.atoms[id1-1]
             self.angles[i][1] = self.atoms[id2-1]
             self.angles[i][2] = self.atoms[id3-1]
-            
+
         for i, dih in enumerate(self.dihedrals):
             id1 = dih[0]
             id2 = dih[1]
@@ -255,8 +255,8 @@ class ITPFile:
             self.dihedrals[i][2] = self.atoms[id3-1]
             self.dihedrals[i][3] = self.atoms[id4-1]
 
-        
-            
+
+
     def write_rtp(self, filename ='mol.rtp'):
         fp = open(filename,'w')
         print >>fp, '[ %s ]' % self.name
@@ -267,38 +267,38 @@ class ITPFile:
 
         print >>fp, '\n [ bonds ]'
         for bond in self.bonds:
-	    if len(bond)<=3:
+            if len(bond)<=3:
                 print >>fp, "%8s %8s "% \
                       (bond[0].name, bond[1].name)
-	    else:
+            else:
                 print >>fp, "%8s %8s %8.4f %8.4f "% \
                       (bond[0].name, bond[1].name, bond[3], bond[4])
 
-            
+
         print >>fp, '\n [ angles ]'
         for angle in self.angles:
-	    if len(angle)<=4:
+            if len(angle)<=4:
                 print >>fp, "%8s %8s %8s "% \
                       (angle[0].name, angle[1].name,angle[2].name)
-	    elif angle[3]==5: # U-B
+            elif angle[3]==5: # U-B
                 print >>fp, "%8s %8s %8s %8.4f %8.4f %8.4f %8.4f "% \
                       (angle[0].name, angle[1].name,angle[2].name,
-			angle[4],angle[5],angle[6],angle[7])
-	    else:
+                        angle[4],angle[5],angle[6],angle[7])
+            else:
                 print >>fp, "%8s %8s %8s %8.4f %8.4f "% \
                       (angle[0].name, angle[1].name,angle[2].name,angle[4],angle[5])
-		
+
 
         print >>fp, '\n [ dihedrals ]'
         for dih in self.dihedrals:
-	    if len(dih)<=5: # no parameters
+            if len(dih)<=5: # no parameters
                 print >>fp, "%8s %8s %8s %s "% \
-                      (dih[0].name, dih[1].name,dih[2].name, dih[3].name) 
-	    elif dih[4]==3:
+                      (dih[0].name, dih[1].name,dih[2].name, dih[3].name)
+            elif dih[4]==3:
                 print >>fp, "%8s %8s %8s %s %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f "% \
                       (dih[0].name, dih[1].name,dih[2].name, dih[3].name,
                        dih[5], dih[6], dih[7], dih[8], dih[9], dih[10])
-	    elif (dih[4]==1) or (dih[4]==4) or (dih[4]==9):
+            elif (dih[4]==1) or (dih[4]==4) or (dih[4]==9):
                 print >>fp, "%8s %8s %8s %s %8.4f %8.4f %8.4f "% \
                       (dih[0].name, dih[1].name,dih[2].name, dih[3].name,
                        dih[5], dih[6], dih[7])
@@ -318,7 +318,7 @@ class ITPFile:
 #            elif dih[4]==4:
 #                print >>fp, "%8s %8s %8s %s %8.4f %8.4f %8.4f "% \
 #                      (dih[0].name, dih[1].name,dih[2].name, dih[3].name, dih[5], dih[6], dih[7])
-            
+
 
     def read_vsites2(self, lines):
         starts = []
@@ -333,7 +333,7 @@ class ITPFile:
             for line in lst:
                 entr = line.split()
                 idx = [int(x) for x in entr[:3]]
-                
+
                 func = int(entr[3])
                 try:
                     rest = ' '.join(entr[4:])
@@ -358,7 +358,7 @@ class ITPFile:
             for line in lst:
                 entr = line.split()
                 idx = [int(x) for x in entr[:4]]
-                
+
                 func = int(entr[4])
                 try:
                     rest = ' '.join(entr[5:])
@@ -383,7 +383,7 @@ class ITPFile:
             for line in lst:
                 entr = line.split()
                 idx = [int(x) for x in entr[:5]]
-                
+
                 func = int(entr[5])
                 try:
                     rest = ' '.join(entr[6:])
@@ -395,7 +395,7 @@ class ITPFile:
                                             self.atoms[idx[3]-1],\
                                             self.atoms[idx[4]-1],\
                                             func,rest])
-                
+
 
 class Topology:
 
@@ -433,8 +433,8 @@ class Topology:
             self.NBParams = NBParser( l )
 #            self.types, self.bond_lib, self.ang_lib, self.dih_lib = \
 #                        read_ff(self.topfile,ff=ff)
-            self.assign_fftypes()        
-        
+            self.assign_fftypes()
+
     def read_top(self, fname, ff = 'amber99sb'):
         if not hasattr(fname,"readlines"):
             lines = open(fname).readlines()
@@ -461,7 +461,7 @@ class Topology:
         if not self.is_itp:
             self.read_system(lines)
             self.read_molecules(lines)
-        
+
     def assign_forcefield_parameters(self, eval_cpp = True):
         if eval_cpp:
             proc = cpp.PreProcessor()
@@ -505,7 +505,7 @@ class Topology:
         else:
             atomlist = self.atoms
         for atom in atomlist:
-            atom.atomtypeB = atom.atomtype 
+            atom.atomtypeB = atom.atomtype
             atom.mB = atom.m
             atom.qB = atom.q
 
@@ -556,8 +556,8 @@ class Topology:
         lst = readSection(lines,'[ system ]','[')
         self.system = lst[0].strip()
 
-        
-        
+
+
     def read_atoms(self,lines):
         lst = readSection(lines,'[ atoms ]','[')
         self.atoms = []
@@ -586,14 +586,14 @@ class Topology:
                 lB = float(entries[5])
                 kB = float(entries[6])
                 self.bonds.append([self.atoms[idx[0]-1], self.atoms[idx[1]-1], idx[2], [lA,kA],[lB,kB]])
-            
+
     def read_pairs(self,lines):
         lst = readSection(lines,'[ pairs ]','[')
         self.pairs = []
         for line in lst:
             idx = [int(x) for x in line.split()]
             self.pairs.append([self.atoms[idx[0]-1], self.atoms[idx[1]-1], idx[2]])
-        
+
     def read_constraints(self,lines):
         lst = readSection(lines,'[ constraints ]','[')
         self.constraints = []
@@ -602,7 +602,7 @@ class Topology:
             self.constraints.append([self.atoms[idx[0]-1], self.atoms[idx[1]-1], idx[2]])
         if self.constraints:
             self.have_constraints = True
-            
+
     def read_angles(self, lines):
         lst = readSection(lines,'[ angles ]','[')
         angles = []
@@ -626,7 +626,7 @@ class Topology:
                 kB = float(entries[7])
                 self.angles.append([self.atoms[idx[0]-1], self.atoms[idx[1]-1], \
                                     self.atoms[idx[2]-1], idx[3], [lA,kA],[lB,kB]])
-                
+
     def read_dihedrals(self, lines):
         starts = []
         dih = []
@@ -638,7 +638,7 @@ class Topology:
             for line in lst:
                 entr = line.split()
                 idx = [int(x) for x in entr[:4]]
-                
+
                 func = int(entr[4])
                 try:
                     rest = ' '.join(entr[5:])
@@ -662,7 +662,7 @@ class Topology:
             for line in lst:
                 entr = line.split()
                 idx = [int(x) for x in entr[:4]]
-                
+
                 func = int(entr[4])
                 try:
                     rest = ' '.join(entr[5:])
@@ -687,7 +687,7 @@ class Topology:
             for line in lst:
                 entr = line.split()
                 idx = [int(x) for x in entr[:5]]
-                
+
                 func = int(entr[5])
                 try:
                     rest = ' '.join(entr[6:])
@@ -723,7 +723,7 @@ class Topology:
         l = readSection(lines,'[ moleculetype ]','[')
         if l:
             self.name, self.nexcl =  l[0].split()[0], int(l[0].split()[1])
-        
+
     def set_molecule(self, molname, n):
         mol_exists = False
         for i, mol in enumerate(self.molecules):
@@ -732,7 +732,7 @@ class Topology:
                 mol_exists = True
         if not mol_exists:
             self.molecules.append([molname,n])
-            
+
     def del_molecule(self, molname):
         if not hasattr(molname,"append"):
             molname = [molname]
@@ -741,7 +741,7 @@ class Topology:
             if m[0] not in molname:
                 new.append(m)
         self.molecules = new
-        
+
     def write_top(self, outfile, stateBonded = 'AB', stateTypes = 'AB', stateQ = 'AB',
                   scale_mass = False, dummy_qA = 'on', dummy_qB = 'on', target_qB = [],
                   full_morphe = True):
@@ -769,7 +769,7 @@ class Topology:
             self.write_system(fp)
             self.write_molecules(fp)
         fp.close()
-        
+
     def write_header(self,fp):
         for line in self.header:
             print >>fp, line
@@ -792,11 +792,11 @@ class Topology:
         for atom in atoms:
             if atom.atomtypeB is not None and atom.atomtype != atom.atomtypeB: return True
         return False
-    
+
     def __is_perturbed_residue( self, residue ):
         if self.__atoms_morphe(residue.atoms): return True
         return False
-        
+
     def __last_perturbed_atom(self, r):
 
         max_order = 0
@@ -989,7 +989,7 @@ class Topology:
             print >>fp, '%6d %6d %6d' % (p[0].id, p[1].id, p[2])
 
     def write_angles(self,fp, state='AB'):
-        print >>fp,'\n [ angles ]'    
+        print >>fp,'\n [ angles ]'
         print >>fp, ';  ai    aj    ak funct            c0            c1            c2            c3'
         for ang in self.angles:
             if len(ang) == 4:
@@ -1010,7 +1010,7 @@ class Topology:
 
 
     def write_dihedrals(self, fp, state='AB'):
-        print >>fp,'\n [ dihedrals ]'    
+        print >>fp,'\n [ dihedrals ]'
         print >>fp,';  ai    aj    ak    al funct            c0            c1            c2            c3            c4            c5'
         for d in self.dihedrals:
             if len(d) == 5:
@@ -1033,7 +1033,7 @@ class Topology:
                     ast = ' '.join(["%g" % x for x in d[5][1:]])
                 if bs == 'NULL':
                     if d[4] == 3:
-                        bs = ' '.join(["%g" % x for x in [0,0,0,0,0,0]]) 
+                        bs = ' '.join(["%g" % x for x in [0,0,0,0,0,0]])
                     elif d[4] == 1:
                         bs = ' '.join(["%g" % x for x in [0,0,0]])
                 elif bs !='NULL' and hasattr(bs,"append"):
@@ -1053,22 +1053,22 @@ class Topology:
 
 
     def check_case(self, atoms):
-            A = ''
-            B = ''
-            for a in atoms:
-                if a.atomtype.startswith('DUM'): A += 'D'
-                else: A += 'A'
-                if a.atomtypeB is not None:
-                    if a.atomtypeB.startswith('DUM'): B += 'D'
-                    else: B += 'A'
+        A = ''
+        B = ''
+        for a in atoms:
+            if a.atomtype.startswith('DUM'): A += 'D'
+            else: A += 'A'
+            if a.atomtypeB is not None:
+                if a.atomtypeB.startswith('DUM'): B += 'D'
                 else: B += 'A'
-            return A, B
+            else: B += 'A'
+        return A, B
 
 
 
 
     def write_vsites3(self, fp):
-        print >>fp,'\n [ virtual_sites3 ]'    
+        print >>fp,'\n [ virtual_sites3 ]'
         print >>fp,';  ai    aj    ak    al funct            c0            c1'
         for vs in self.virtual_sites3:
             if len(vs) == 6:
@@ -1079,7 +1079,7 @@ class Topology:
                 sys.exit(1)
 
     def write_vsites4(self, fp):
-        print >>fp,'\n [ virtual_sites4 ]'    
+        print >>fp,'\n [ virtual_sites4 ]'
         print >>fp,';  ai    aj    ak    al    am  funct            c0            c1          c2'
         for vs in self.virtual_sites4:
             if len(vs) == 7:
@@ -1098,7 +1098,7 @@ class Topology:
         print >>fp, '[ molecules ]'
         for mol, num in self.molecules:
             print >>fp, "%s %d" % (mol,num)
-            
+
     def assign_fftypes(self):
         for atom in self.atoms:
             atom.type = self.NBParams.atomtypes[atom.atomtype]['bond_type']
@@ -1106,7 +1106,7 @@ class Topology:
                 atom.typeB = self.NBParams.atomtypes[atom.atomtypeB]['bond_type']
             else:
                 atom.typeB = atom.type
-            
+
     def make_bond_params(self):
         for i, (at1,at2,func) in enumerate(self.bonds):
             param = get_bond_param(at1.type,at2.type,self.bond_lib)
@@ -1124,7 +1124,7 @@ class Topology:
                       (at1.type, at2.type, at3.type)
                 sys.exit(1)
             self.angles[i].append(param[1:])
-            
+
     def make_dihedral_params(self):
         for i, d in enumerate(self.dihedrals):
             if d[5]!='': # we have a prefefined dihedral
@@ -1141,8 +1141,8 @@ class Topology:
                     sys.exit(1)
                 del self.dihedrals[i][-1]
                 self.dihedrals[i].append(param[1:])
-                
-                
+
+
 
 
 def cpp_parse_file(fn,cpp_defs=[],cpp_path=[os.environ.get('GMXLIB')] ):
@@ -1259,7 +1259,7 @@ def __get_rtp_entry( key, lines ):
         else:
             r.append(line)
     return r
-    
+
 def __read_rtp_atoms(resname, lines ):
     atoms = []
     for line in lines:
@@ -1368,7 +1368,7 @@ def read_rtp( filename ):
             }
     sys.stderr.write('\ndone...\n' )
     return rtp_entries
-        
+
 
 
 def get_rtp_entry(key, filename = 'ffamber99sb.rtp'):
@@ -1379,8 +1379,8 @@ def get_rtp_entry(key, filename = 'ffamber99sb.rtp'):
     idx = 0
     for line in lines:
         if line.strip()[1:-1].strip() == key:
-           idx = lines.index(line)
-           break
+            idx = lines.index(line)
+            break
     for line in lines[idx+1:]:
         if line.strip().startswith('['):
             if line.strip()[1:-1].strip() not in \
@@ -1462,9 +1462,9 @@ def write_itp_atoms(fp,al):
     print >>fp,'; nr       type  resnr residue  atom   cgnr     charge       mass  typeB    chargeB'
     for atom in al:
         if atom.atomtypeB is not None:
-             print >>fp , '%6d %11s %7d%7s%7s%7d%11.6f%11.4f %11s%11.6f%11.4f' % \
-                  (atom.id, atom.atomtype, atom.resnr, atom.resname, atom.name, \
-                   atom.cgnr, atom.q, atom.m, atom.atomtypeB, atom.qB, atom.mB)
+            print >>fp , '%6d %11s %7d%7s%7s%7d%11.6f%11.4f %11s%11.6f%11.4f' % \
+                 (atom.id, atom.atomtype, atom.resnr, atom.resname, atom.name, \
+                  atom.cgnr, atom.q, atom.m, atom.atomtypeB, atom.qB, atom.mB)
         else:
             print >>fp , '%6d %11s %7d%7s%7s%7d%11.6f%11.4f' % \
                   (atom.id, atom.atomtype, atom.resnr, atom.resname, atom.name, \
@@ -1544,7 +1544,7 @@ def write_itp_moleculetype(fp,name,nrexcl):
     print >>fp, '[ moleculetype ]'
     print >>fp, '; Name        nrexcl'
     print >>fp, '%s  %d' % (name,nrexcl)
-    
+
 def read_itp_bonds(lines):
     lst = readSection(lines,'[ bonds ]','[')
     bonds = []
@@ -1630,14 +1630,14 @@ def read_gaff_top(fname):
 #    atypes = read_atomtypes(lines, ff = 'amber03')
 #    itp.atomtypes = atypes
     return itp
-    
+
 class MDPError(Exception):
     def __init__(self, s):
         self.s = s
     def __str__(self):
         return repr(self.s)
 
-    
+
 class MDP:
 
     def __init__(self, fn = None):
@@ -1678,7 +1678,7 @@ class MDP:
         ['pbc'                      , 'xyz'],
         ['periodic_molecules'       , 'no'],
         ['rlist'                    , 1.2],
-	['cutoff-scheme'	    , 'verlet'],
+        ['cutoff-scheme'            , 'verlet'],
         ['coulombtype'              , 'PME'],
         ['rcoulomb-switch'          , 0],
         ['rcoulomb'                 , 1.1],
@@ -1770,7 +1770,7 @@ class MDP:
         ['sc-alpha'                 , 0.3],
         ['sc-power'                 , 1],
         ['sc-sigma'                 , 0.25],
-	['sc-coul'		    , 'yes'],
+        ['sc-coul'                  , 'yes'],
         ['couple-moltype'           ,''],
         ['couple-lambda0'           , 'vdw-q'],
         ['couple-lambda1'           , 'vdw-q'],
@@ -1798,7 +1798,7 @@ class MDP:
         ['userreal3'                , 0],
         ['userreal4'                , 0]
         ])
-        
+
         if fn:
             self.read(fn)
 
@@ -1813,17 +1813,17 @@ class MDP:
                 s = str(val)
             line+="%-25s = %s\n" % (key, s)
         return line
-            
+
     def __setitem__(self,item,value):
         if not self.parameters.has_key(item):
             raise MDPError, "No such option %s" % item
-        
+
         self.parameters[item] = value
 
     def __getitem__(self, item):
         return self.parameters[item]
 
-        
+
     def write(self, fp = None):
 
         if fp is None:
@@ -1878,7 +1878,7 @@ def make_amber_residue_names(model):
                 res.set_resname(rr)
             else:
                 res.set_resname('CYM')
-            
+
         else:
             res.set_resname('CYN')
     lysl = model.fetch_residues('LYS')
@@ -1946,7 +1946,7 @@ def assign_ffamber99sb_params(m):
     m.rename_atoms()
     for c in m.chains:
         c.make_residue_tree()
-        
+
     make_amber_residue_names( m)
     rtp = RTPParser('ffamber99sb.rtp')
     rtp.assign_params(m)
@@ -1955,7 +1955,7 @@ def assign_ffamber99sb_params(m):
     nb.assign_params( m )
     bo.assign_params( m )
     rtp.assign_dihedral_params( m, bo.directives )
-    
+
 
 
 def bond_energy(m):
@@ -1980,20 +1980,19 @@ def nb_energy( m ):
 
 def energy(m):
 
-    bond_ene = bond_energy( m ) 
+    bond_ene = bond_energy( m )
     angle_ene = angle_energy( m )
     dihedral_ene = dihedral_energy( m )
     improper_ene = improper_energy ( m )
     lj14_ene = lj14_energy( m )
     coul14_ene = coul14_energy( m )
     nb_ene = nb_energy( m )
-##     print 'bonds = ', bond_ene   
+##     print 'bonds = ', bond_ene
 ##     print 'angles = ',angle_ene
 ##     print 'dihedrals = ',dihedral_ene
 ##     print 'impropers = ',improper_ene
 ##     print 'nb = ',nb_ene
 ##     print 'lj14 = ',lj14_ene
 ##     print 'coul14 = ',coul14_ene
- 
-    return bond_ene + angle_ene + dihedral_ene + improper_ene + nb_ene + lj14_ene + coul14_ene
 
+    return bond_ene + angle_ene + dihedral_ene + improper_ene + nb_ene + lj14_ene + coul14_ene

@@ -40,9 +40,3 @@ class Trajectory(xdrfile.XDRFile):
 
     def get_natoms(self):
         return self.natoms
-
-
-
-
-
-

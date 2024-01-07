@@ -17,9 +17,8 @@ for r in m.residues:
 ## for i in range(100):
 ##     for atom in m.atoms:
 ##         atom.x = R.apply( atom.x, 60*pi/180.)
-    
+
 
 t2 = time.clock()
 print t2-t1
 m.write("out2.pdb")
-

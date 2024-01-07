@@ -21,5 +21,3 @@ c.write('x.pdb')
 ## for i, r in enumerate(rot):
 ##     res.set_conformation( r )
 ##     c.write("rot%d.pdb" % i )
-    
-

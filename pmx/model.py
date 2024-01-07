@@ -75,8 +75,8 @@ import chain
 from molecule import *
 from atom import *
 import _pmx as _p
-XX       =  0             
-YY       =  1             
+XX       =  0
+YY       =  1
 ZZ       =  2
 
 
@@ -84,7 +84,7 @@ class Model(Atomselection):
 
     def __init__(self, filename = None, pdbline = None, renumber_atoms=True,
                  renumber_residues = True, bPDBTER= False, bNoNewID=True, bPDBGAP=False, **kwargs):
-        
+
         Atomselection.__init__(self)
         self.title = 'PMX MODEL'
         self.chains = []
@@ -126,13 +126,13 @@ class Model(Atomselection):
             self.renumber_atoms()
         if renumber_residues:
             self.renumber_residues()
-                
-            
+
+
     def __str__(self):
         s = '< Model: nchain = %d nres = %d natom = %d >' %\
             (len(self.chains), len(self.residues), len(self.atoms))
         return s
-        
+
 
 ##     def writePDB(self,fname,title="",nr=1):
 
@@ -170,8 +170,8 @@ class Model(Atomselection):
             for chain in self.chains:
                 print >>fp, '> %s_chain_%s' % (title, chain.id )
                 print >>fp, chain.get_sequence()
-                
-    
+
+
 
 ##     def writeGRO( self, filename, title = ''):
 ##         fp = open(filename,'w')
@@ -197,7 +197,7 @@ class Model(Atomselection):
 ##             else:
 ##                 ff+=gro_format % (atom.x[XX]*fac, atom.x[YY]*fac, atom.x[ZZ]*fac )
 ##             print >>fp, ff
-            
+
 ##         if self.box[XX][YY] or self.box[XX][ZZ] or self.box[YY][XX] or \
 ##                self.box[YY][ZZ] or self.box[ZZ][XX] or self.box[ZZ][YY]:
 ##             bTric = False
@@ -260,13 +260,13 @@ class Model(Atomselection):
                     ch.id = atom.chain_id
                     atom.chain = ch
                     ch.atoms.append(atom)
-        
+
         self.chains.append(ch)
         for ch in self.chains:
             ch.model = self
             idx = ch.id
             self.chdic[idx] = ch
-            
+
     def make_residues(self):
         self.residues = []
         for ch in self.chains:
@@ -310,7 +310,7 @@ class Model(Atomselection):
             for r in ch.residues:
                 r.chain = ch
                 r.chain_id = ch.id
-                
+
     def __readPDB(self,fname=None, pdbline=None):
         if pdbline:
             l = pdbline.split('\n')
@@ -327,81 +327,81 @@ class Model(Atomselection):
         self.make_residues()
         self.unity  = 'A'
         return self
-   
+
     def __check_if_gap( self, atC, atN ):
         if atC==None:
             return(False)
         if atN.name != 'N':
             return(False)
         d = atC - atN
-        if d > 1.7: # bond 
+        if d > 1.7: # bond
             return(True)
         return(False)
- 
+
     def __readPDBTER(self,fname=None, pdbline=None, bNoNewID=True, bPDBGAP=False):
         if pdbline:
             l = pdbline.split('\n')
         else:
             l = open(fname,'r').readlines()
 
- 	chainIDstring = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnoprstuvwxyz123456789'
-	bNewChain = True
-	chainID = ' '
-	prevID = ' '
+        chainIDstring = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnoprstuvwxyz123456789'
+        bNewChain = True
+        chainID = ' '
+        prevID = ' '
         prevAtomName = ' '
         prevResID = 0
         prevResName = ' '
         usedChainIDs = []
         atomcount = 1
         prevCatom = None
-        
+
         for line in l:
-	    if 'TER' in line:
-		bNewChain = True
+            if 'TER' in line:
+                bNewChain = True
             if (line[:4]=='ATOM') or (line[:6]=='HETATM'):
                 a = Atom().readPDBString(line,origID=atomcount)
                 atomcount+=1
-#		if (a.chain_id != prevID) and (a.chain_id != ' '): # identify chain change by ID (when no TER is there)
-		if (a.chain_id != prevID): # identify chain change by ID (when no TER is there)
-		    bNewChain = True
+#               if (a.chain_id != prevID) and (a.chain_id != ' '): # identify chain change by ID (when no TER is there)
+                if (a.chain_id != prevID): # identify chain change by ID (when no TER is there)
+                    bNewChain = True
                 if (self.__check_if_gap( prevCatom,a )==True and bPDBGAP==True):
                     bNewChain = True
                 if (a.resnr != prevResID):
                     try:
                         if a.resnr != prevResID+1:
-		            bNewChain = True
+                            bNewChain = True
                         if (prevAtomName == 'OC2') or (prevAtomName == 'OXT') or (prevAtomName == 'OT2'):
                             bNewChain = True
                         if (prevAtomName == 'HH33') and ((prevResName=='NME') or (prevResName=='NAC') or (prevResName=='CT3')): # NME cap
                             bNewChain = True
                     except TypeError:
                         bNewChain = False
-		prevID = a.chain_id
+                prevID = a.chain_id
                 prevResID = a.resnr
                 prevAtomName = a.name
                 prevResName = a.resname
                 if a.name == 'C':
                     prevCatom = a
-		if bNewChain==True:
-		    if (a.chain_id==' ') or (a.chain_id==chainID) or (a.chain_id in usedChainIDs):
+                if bNewChain==True:
+                    if (a.chain_id==' ') or (a.chain_id==chainID) or (a.chain_id in usedChainIDs):
                         #print a.chain_id,a,chainID,usedChainIDs
-			# find a new chain id
-			bFound = False
-			while bFound==False:
-			    foo = chainIDstring[0]
-			    chainIDstring = chainIDstring.lstrip(chainIDstring[0])
-			    if foo not in usedChainIDs:
-				bFound=True
-				chainID = foo
-				if bNoNewID==True:
-				    chainID = "pmx"+foo
-				usedChainIDs.append(chainID)
-		    else:
-			chainID = a.chain_id
-			usedChainIDs.append(chainID)
-		a.chain_id = chainID
+                        # find a new chain id
+                        bFound = False
+                        while bFound==False:
+                            foo = chainIDstring[0]
+                            chainIDstring = chainIDstring.lstrip(chainIDstring[0])
+                            if foo not in usedChainIDs:
+                                bFound=True
+                                chainID = foo
+                                if bNoNewID==True:
+                                    chainID = "pmx"+foo
+                                usedChainIDs.append(chainID)
+                    else:
+                        chainID = a.chain_id
+                        usedChainIDs.append(chainID)
+                a.chain_id = chainID
                 self.atoms.append(a)
-		bNewChain = False
+                bNewChain = False
             if line[:6] == 'CRYST1':
                 self.box = _p.box_from_cryst1( line )
 
@@ -495,9 +495,9 @@ class Model(Atomselection):
     def read(self, filename, bPDBTER=False, bNoNewID=True, bPDBGAP=False ):
         ext = filename.split('.')[-1]
         if ext == 'pdb':
-	    if bPDBTER:
+            if bPDBTER:
                 return self.__readPDBTER( filename, None, bNoNewID, bPDBGAP )
-	    else:
+            else:
                 return self.__readPDB( filename )
         elif ext == 'gro':
             return self.__readGRO( filename )
@@ -509,7 +509,7 @@ class Model(Atomselection):
         for i, res in enumerate(self.residues):
             res.set_orig_resid( res.id )
             res.set_resid(i+1)
-            
+
 
     def remove_atom(self,atom):
         m = atom.molecule
@@ -533,16 +533,16 @@ class Model(Atomselection):
         self.al_from_resl()
         self.renumber_residues()
         self.renumber_atoms()
-        
+
 
     def __delitem__(self,key):
         self.remove_chain(key)
-    
+
 ##     def insert_sequence(self,pos,new_chain,chain_id):
 ##         """insert a sequence"""
 ##         ch = self.chdic[chain_id]
 ##         ch.insert_chain(pos,new_chain)
-        
+
 
     def insert_residue(self,pos,res,chain_id):
         ch = self.chdic[chain_id]
@@ -551,7 +551,7 @@ class Model(Atomselection):
     def replace_residue(self,residue,new,bKeepResNum=False):
         ch = residue.chain
         ch.replace_residue(residue,new,bKeepResNum)
-        
+
     def insert_chain(self,pos,new_chain):
         if self.chdic.has_key(new_chain.id):
             print 'Chain identifier %s already in use!' % new_chain.id
@@ -564,14 +564,14 @@ class Model(Atomselection):
         self.make_residues()
         self.renumber_atoms()
         self.renumber_residues()
-        
+
 
     def append(self,new_chain):
         """ we assume chain is a Chain"""
         idx = len(self.chains)
         self.insert_chain(idx,new_chain)
-        
-    
+
+
     def fetch_residues(self,key, inv=False):
         if not hasattr(key,"append"):
             key = [key]
@@ -585,7 +585,7 @@ class Model(Atomselection):
                 if r.resname not in key:
                     result.append(r)
         return result
-    
+
     def fetch_residues_by_ID(self, ind):
         for r in self.residues:
             if r.id == ind:
@@ -597,19 +597,19 @@ class Model(Atomselection):
         for r in self.residues:
             for atom in r.atoms:
                 self.atoms.append(atom)
-                
+
 
     def resl_from_chains(self):
         self.residues = []
         for ch in self.chains:
             for r in ch.residues:
                 self.residues.append(r)
-                
+
     def copy(self):
         return copy.deepcopy(self)
 
 
-        
+
 ##     def get_bonded(self):
 ##         for ch in self.chains:
 ##             ch.get_bonded()
@@ -643,7 +643,7 @@ class Model(Atomselection):
 ##                         at3.b14.append(atom)
 
 
-                    
+
 ##     def get_connections(self,cutoff=.8):
 ##         if self.atoms[0].symbol == '':
 ##             self.get_symbol()
@@ -662,22 +662,22 @@ class Model(Atomselection):
 ##                 print 'Error: Number of atoms in trajectory\n \
 ##                 doesn\'t match topology\n'
 ##                 sys.exit(1)
-                
+
 ##             for i in range(nat):
 ##                 self.atoms[i].x=frame['x'][i]
 ##             self.box = frame['box']
-        
+
     def get_mol2_types(self):
         if self.atoms[0].symbol == '':
             self.get_symbol()
         for ch in self.chains:
             ch.get_mol2_types()
-            
+
 
     def get_mol2_resname(self):
         for ch in self.chains:
             ch.get_mol2_resname()
-            
+
     def get_nterms(self):
         nter = []
         for ch in model.chains:
@@ -702,12 +702,4 @@ class Model(Atomselection):
         return self.residues[idx-1]
 
     def chain(self, iden):
-        return self.chdic[iden] 
-    
-
-
-
-
-    
-
-
+        return self.chdic[iden]

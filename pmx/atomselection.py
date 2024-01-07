@@ -52,7 +52,7 @@ ZZ = 2
 class Atomselection:
     """ Basic class to handle sets of atoms. Atoms are stored
     in a list <atoms>"""
-    
+
     def __init__(self, **kwargs):
         self.atoms = []
         self.unity = 'A'
@@ -60,9 +60,9 @@ class Atomselection:
             setattr(self,key,val)
 
     def writePDB(self,fname,title="",nr=1,bPDBTER=False,bAssignChainIDs=False,resnrlist=[]):
-	if nr > 1:
-	    fp = open(fname,'a')
-	else:
+        if nr > 1:
+            fp = open(fname,'a')
+        else:
             fp = open(fname,'w')
         if not title:
             if hasattr(self,"title"):
@@ -79,16 +79,16 @@ class Atomselection:
             box_line = _pmx.box_as_cryst1( self.box )
             print >>fp, box_line
 
-	chainID = self.atoms[0].chain_id
+        chainID = self.atoms[0].chain_id
         for atom in self.atoms:
-	    if (bPDBTER==True) and (atom.chain_id != chainID):
-		print >>fp, 'TER'
-		chainID = atom.chain_id
-	    if (len(resnrlist)>0) and (atom.resnr not in resnrlist):
-		continue
-	    if atom.chain_id.startswith('pmx'):
+            if (bPDBTER==True) and (atom.chain_id != chainID):
+                print >>fp, 'TER'
+                chainID = atom.chain_id
+            if (len(resnrlist)>0) and (atom.resnr not in resnrlist):
+                continue
+            if atom.chain_id.startswith('pmx'):
                 if bAssignChainIDs==False:
-		    atom.chain_id = ""
+                    atom.chain_id = ""
                 else:
                     atom.chain_id = atom.chain_id#[-1]
             if( len(atom.name) > 4): # too long atom name
@@ -157,7 +157,7 @@ class Atomselection:
             sys.exit(1)
 
 
-            
+
     def com(self,vector_only=False):
         """move atoms to center of mass or return vector only"""
         for atom in self.atoms:
@@ -178,7 +178,7 @@ class Atomselection:
                 atom.x[0]-=x
                 atom.x[1]-=y
                 atom.x[2]-=z
-        
+
 
 
     def atomlistFromTop(self,topDic):
@@ -205,7 +205,7 @@ class Atomselection:
             atom.x[2]*=.1
             atom.unity = 'nm'
         self.unity = 'nm'
-        
+
     def nm2a(self):
         if self.unity == 'A':
             return
@@ -215,11 +215,11 @@ class Atomselection:
             atom.x[2]*=10.
             atom.unity = 'A'
         self.unity = 'A'
-        
+
     def get_long_name(self):
         for atom in self.atoms:
             atom.make_long_name()
-            
+
     def get_symbol(self):
         for atom in self.atoms:
             atom.get_symbol()
@@ -241,8 +241,8 @@ class Atomselection:
             changed = True
             self.nm2a()
         _pmx.search_neighbors(self.atoms, cutoff, build_bonds )
-    
-    
+
+
 
     def coords(self):
         return map(lambda a: a.x, self.atoms)
@@ -305,7 +305,7 @@ class Atomselection:
             atom.x[0]+=vec[0]
             atom.x[1]+=vec[1]
             atom.x[2]+=vec[2]
-            
+
 
     def random_rotation(self):
         vec = self.com(vector_only = True)
@@ -346,13 +346,9 @@ class Atomselection:
                 print 'bondtype %s-%s defaults to 1' % (at1.atype, at2.atype)
                 newl.append((at1,at2,'1'))
         self.bondlist = newl
-                                
+
     def get_by_id(self, lst):
         atlst = []
         for idx in lst:
             atlst.append(self.atoms[idx-1])
         return atlst
-    
-            
-
-

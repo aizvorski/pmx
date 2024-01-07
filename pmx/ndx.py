@@ -29,7 +29,7 @@
 # ----------------------------------------------------------------------
 from parser import *
 import re
-import sys    
+import sys
 #---------------------------------------------------
 class IndexGroup:
     """ CLASS TO DEAL WITH GROMACS INDEX FILES"""
@@ -41,7 +41,7 @@ class IndexGroup:
             self.ids = ids
         self.name = name
         self.ids.sort()
-        
+
     def __str__(self):
         s = ''
         s+= '[ %s ]\n' % self.name
@@ -149,8 +149,8 @@ class IndexFile:
 
     def __delitem__(self, item ):
         self.delete_group( item )
-    
-                           
+
+
 
 #---------------------------------------------------
 
@@ -171,13 +171,9 @@ def get_index(atom_list = None, residue_list = None, chain_list = None):
         al = []
         map(lambda c: al.extend(c.atoms), chain_list)
         return get_index(atom_list = al)
-    
-        
+
+
 def make_index_group(atomlist, name):
     lst = get_index(atomlist)
     g = IndexGroup(ids = lst, name = name)
     return g
-
-    
-
-
