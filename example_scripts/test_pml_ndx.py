@@ -2,6 +2,10 @@ import sys, os
 from pmx import *
 from pmx.ndx import *
 
+import pytest
+pytest.skip(allow_module_level=True)
+# skip because pymol not installed as dependency
+
 from pymol import cmd, stored
 
 
