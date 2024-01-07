@@ -31,10 +31,10 @@ __doc__="""
 Functions to read the mutation database
 """
 import sys,os
-from model import Model
-from atom import Atom
-from molecule import Molecule
-from parser import *
+from .model import Model
+from .atom import Atom
+from .molecule import Molecule
+from .parser import *
 
 def read_mutpdb(filename='mutations_oplsaa.pdb'):
     if not hasattr(filename,"read"):

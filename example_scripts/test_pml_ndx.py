@@ -30,8 +30,8 @@ def load_ndx( fname = "index.ndx", names = []):
     if not names:
         names = ndx_file.names
     for name in names:
-        print name
-        if ndx_file.dic.has_key( name ):
+        print(name)
+        if name in ndx_file.dic:
             ids = ndx_file[name].ids
             __sel_from_id_list( name, ids )
 

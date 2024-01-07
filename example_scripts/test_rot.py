@@ -20,5 +20,5 @@ for r in m.residues:
 
 
 t2 = time.clock()
-print t2-t1
+print(t2-t1)
 m.write("out2.pdb")

@@ -31,11 +31,11 @@ __doc__="""
 This file contains stuff to deal with the Dunbrack rotamer
 library"""
 import os, sys
-from library import pmx_data_file, _aacids_dic
+from .library import pmx_data_file, _aacids_dic
 
-import molecule
-import cPickle
-from geometry import *
+from . import molecule
+import pickle
+from .geometry import *
 
 
 _aa_chi = { 'CYS' :
@@ -129,19 +129,19 @@ def make_bbdep(min_val = .01):
         chi4 = float(entr[12])
         key = (round(phi,0),round(psi,0))
         if freq >= min_val:
-            if dic.has_key(resn):
-                if dic[resn].has_key(key):
+            if resn in dic:
+                if key in dic[resn]:
                     dic[resn][key].append([freq, chi1, chi2, chi3, chi4])
                 else:
                     dic[resn][key] = [[freq, chi1, chi2, chi3, chi4]]
             else:
                 dic[resn] = {key:[[freq, chi1, chi2, chi3, chi4]]}
-    for key, val in dic.items():
-        for bb, lst in val.items():
+    for key, val in list(dic.items()):
+        for bb, lst in list(val.items()):
             lst.sort(lambda a,b: cmp(float(a[0]),float(b[0])))
             lst.reverse()
     fp = open('bbdep.pkl','w')
-    cPickle.dump(dic,fp)
+    pickle.dump(dic,fp)
 
 
 
@@ -168,7 +168,7 @@ def real_resname(r):
            'HSD':'HIS','HISH':'HIS','HISD':'HIS','ASH':'ASP','ASPP':'ASP','ASPH':'ASP',
            'GLH':'GLU','GLUH':'GLU','GLUP':'GLU',
            }
-    if dic.has_key(r): return dic[r]
+    if r in dic: return dic[r]
     else: return r
 
 def get_rotamers(bbdep, resname, phi, psi, residue = False, hydrogens = True, full = False):
@@ -237,7 +237,7 @@ def select_best_rotamer(model, rotamers):
 #    print 'Checking %d rotamers....' % len(rotamers)
     for i, r in enumerate(rotamers):
         score = check_overlaps(model, r, nb_list)
-        print i, score
+        print(i, score)
         if score < .2:
             return r
         if score < min_score:

@@ -29,7 +29,7 @@
 # CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 # ----------------------------------------------------------------------
 
-from __future__ import print_function, division
+
 from pmx.parser import read_and_format
 from pmx.estimators import Jarz, JarzGauss, Crooks, BAR, data2gauss, ks_norm_test
 import sys
@@ -40,7 +40,7 @@ import numpy as np
 from scipy.integrate import simps
 import pickle
 import argparse
-from cli import check_unknown_cmd
+from .cli import check_unknown_cmd
 
 # Constants
 kb = 0.00831447215   # kJ/(K*mol)
@@ -174,7 +174,7 @@ def integrate_dgdl(fn, ndata=-1, lambda0=0, invert_values=False):
 
     lines = [l for l in lines if l[0] not in '#@&']
     try:
-        r = map(lambda x: float(x.split()[1]), lines)
+        r = [float(x.split()[1]) for x in lines]
     except:
         r = "incomplete_file"
         ndata = 1
@@ -240,7 +240,7 @@ def _dump_integ_file(outfn, f_lst, w_lst):
 
 def _data_from_file(fn):
     data = read_and_format(fn, 'sf')
-    return map(lambda a: a[1], data)
+    return [a[1] for a in data]
 
 
 # ------------------
@@ -308,9 +308,9 @@ def plot_work_dist(wf, wr, fname='Wdist.png', nbins=20, dG=None, dGerr=None,
     x1 = 0
     x2 = 0
     if 'A' in statesProvided:
-        x1 = range(len(wf))
+        x1 = list(range(len(wf)))
     if 'B' in statesProvided:
-        x2 = range(len(wr))
+        x2 = list(range(len(wr)))
     if x1 > x2:
         x = x1
     else:
@@ -349,7 +349,7 @@ def plot_work_dist(wf, wr, fname='Wdist.png', nbins=20, dG=None, dGerr=None,
     plt.grid(lw=2)
     plt.xlim(0, x[-1]+1)
     xl = plt.gca()
-    for val in xl.spines.values():
+    for val in list(xl.spines.values()):
         val.set_lw(2)
     plt.subplot(1, 2, 2)
     plt.hist(wf, bins=nbins, orientation='horizontal', facecolor='green',
@@ -392,7 +392,7 @@ def plot_work_dist(wf, wr, fname='Wdist.png', nbins=20, dG=None, dGerr=None,
     plt.xticks([])
     plt.yticks([])
     xl = plt.gca()
-    for val in xl.spines.values():
+    for val in list(xl.spines.values()):
         val.set_lw(2)
     plt.subplots_adjust(wspace=0.0, hspace=0.1)
     plt.savefig(fname, dpi=dpi)

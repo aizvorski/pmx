@@ -59,11 +59,11 @@ def check_case(atoms):
     return A, B
 
 def dump_atoms_and_exit( msg, atoms ):
-    print >>sys.stderr, 'err_> ', msg
-    print >>sys.stderr, 'err_>  name      resname      atomtype       atomtypeB       bondtype       bondtypeB'
+    print('err_> ', msg, file=sys.stderr)
+    print('err_>  name      resname      atomtype       atomtypeB       bondtype       bondtypeB', file=sys.stderr)
     for atom in atoms:
-        print >>sys.stderr, atom.name, atom.resname, atom.atomtype, atom.atomtypeB, atom.type, atom.typeB
-    print >>sys.stderr, 'err_> Exiting'
+        print(atom.name, atom.resname, atom.atomtype, atom.atomtypeB, atom.type, atom.typeB, file=sys.stderr)
+    print('err_> Exiting', file=sys.stderr)
     sys.exit(1)
 
 def atoms_morphe(atoms):
@@ -101,19 +101,19 @@ def find_bonded_entries( topol ):
                 b.extend([astate,bstate])
             # catch errors
             elif 'D' in B and 'D' in A:
-                print 'Error: fake bond %s-%s (%s-%s -> %s-%s)' % (a1.name,a2.name,a1.atomtype,a2.atomtype, a1.atomtypeB,a2.atomtypeB)
+                print('Error: fake bond %s-%s (%s-%s -> %s-%s)' % (a1.name,a2.name,a1.atomtype,a2.atomtype, a1.atomtypeB,a2.atomtypeB))
                 sys.exit(1)
             if astate == None:
-                print 'Error A: No bond entry found for astate %s-%s (%s-%s -> %s-%s)' % (a1.name,a2.name,a1.atomtype,a2.atomtype, a1.type,a2.type)
-                print 'Resi = %s' % a1.resname
+                print('Error A: No bond entry found for astate %s-%s (%s-%s -> %s-%s)' % (a1.name,a2.name,a1.atomtype,a2.atomtype, a1.type,a2.type))
+                print('Resi = %s' % a1.resname)
                 error_occured = True
 
             if bstate == None:
-                print 'Error B: No bond entry found for bstate %s-%s (%s-%s -> %s-%s)' % (a1.name,a2.name,a1.atomtypeB,a2.atomtypeB, a1.typeB,a2.typeB)
+                print('Error B: No bond entry found for bstate %s-%s (%s-%s -> %s-%s)' % (a1.name,a2.name,a1.atomtypeB,a2.atomtypeB, a1.typeB,a2.typeB))
                 error_occured = True
             if error_occured:
                 sys.exit(1)
-    print 'log_> Making bonds for state B -> %d bonds with perturbed atoms' % count
+    print('log_> Making bonds for state B -> %d bonds with perturbed atoms' % count)
 
 def find_angle_entries(topol):
     count = 0
@@ -159,7 +159,7 @@ def find_angle_entries(topol):
             if bstate is None:
                 dump_atoms_and_exit( "No angle entry (state B)", [a1,a2,a3] )
 
-    print 'log_> Making angles for state B -> %d angles with perturbed atoms' % count
+    print('log_> Making angles for state B -> %d angles with perturbed atoms' % count)
 
 
 def check_dih_ILDN_OPLS( topol, rlist, rdic, a1, a2, a3, a4 ):
@@ -422,26 +422,26 @@ def find_dihedral_entries( topol, rlist, rdic, dih_predef_default, ):
 
 
                     if astate == None :
-                        print 'Error: No dihedral angle found (state A: predefined state B) for:'
-                        print a1.resname, a2.resname, a3.resname, a4.resname
-                        print a1.name, a2.name, a3.name, a4.name, func
-                        print a1.atomtype, a2.atomtype, a3.atomtype, a4.atomtype
-                        print a1.type, a2.type, a3.type, a4.type
-                        print a1.atomtypeB, a2.atomtypeB, a3.atomtypeB, a4.atomtypeB
-                        print a1.typeB, a2.typeB, a3.typeB, a4.typeB
-                        print astate
-                        print d
+                        print('Error: No dihedral angle found (state A: predefined state B) for:')
+                        print(a1.resname, a2.resname, a3.resname, a4.resname)
+                        print(a1.name, a2.name, a3.name, a4.name, func)
+                        print(a1.atomtype, a2.atomtype, a3.atomtype, a4.atomtype)
+                        print(a1.type, a2.type, a3.type, a4.type)
+                        print(a1.atomtypeB, a2.atomtypeB, a3.atomtypeB, a4.atomtypeB)
+                        print(a1.typeB, a2.typeB, a3.typeB, a4.typeB)
+                        print(astate)
+                        print(d)
                         sys.exit(1)
 
                     if bstate == None :
-                        print 'Error: No dihedral angle found (state B: predefined state A) for:'
-                        print a1.resname, a2.resname, a3.resname, a4.resname
-                        print a1.name, a2.name, a3.name, a4.name, func
-                        print a1.atomtype, a2.atomtype, a3.atomtype, a4.atomtype
-                        print a1.type, a2.type, a3.type, a4.type
-                        print a1.atomtypeB, a2.atomtypeB, a3.atomtypeB, a4.atomtypeB
-                        print a1.typeB, a2.typeB, a3.typeB, a4.typeB
-                        print d
+                        print('Error: No dihedral angle found (state B: predefined state A) for:')
+                        print(a1.resname, a2.resname, a3.resname, a4.resname)
+                        print(a1.name, a2.name, a3.name, a4.name, func)
+                        print(a1.atomtype, a2.atomtype, a3.atomtype, a4.atomtype)
+                        print(a1.type, a2.type, a3.type, a4.type)
+                        print(a1.atomtypeB, a2.atomtypeB, a3.atomtypeB, a4.atomtypeB)
+                        print(a1.typeB, a2.typeB, a3.typeB, a4.typeB)
+                        print(d)
                         sys.exit(1)
 
                     ### VG ###
@@ -451,8 +451,8 @@ def find_dihedral_entries( topol, rlist, rdic, dih_predef_default, ):
 
 
     topol.dihedrals.extend(dih9)
-    print 'log_> Making dihedrals for state B -> %d dihedrals with perturbed atoms' % count
-    print 'log_> Removed %d fake dihedrals' % nfake
+    print('log_> Making dihedrals for state B -> %d dihedrals with perturbed atoms' % count)
+    print('log_> Removed %d fake dihedrals' % nfake)
 
 
 def get_torsion_multiplicity( name ):
@@ -529,7 +529,7 @@ def find_predefined_dihedrals(topol, rlist, rdic, ffbonded, dih_predef_default, 
                     #the following checks are needed for amber99sb*-ildn
                     #do not overwrite proper (type9) with improper (type4)
                     if('default-star' in d[4] and dx[4]==9):
-                        print '%s' %d[4]
+                        print('%s' %d[4])
                         continue
                     #is the dihedral already found for ILDN
                     encountered = 0
@@ -720,7 +720,7 @@ class mtpError(Exception):
         return repr(self.s)
 
 def get_hybrid_residue(residue_name, mtp_file = 'ffamber99sb.mtp', version = 'old'):
-    print 'log_> Scanning database for %s ' % residue_name
+    print('log_> Scanning database for %s ' % residue_name)
     resi, bonds, imps, diheds, rotdic = read_mtp_entry(residue_name, filename = mtp_file, version = version)
     if len(resi.atoms) == 0:
         raise mtpError("Hybrid residue %s not found in %s" % (residue_name, mtp_file) )
@@ -753,7 +753,7 @@ def get_hybrid_residues( m, mtp_file, version ):
             mtp = get_hybrid_residue( res.resname, mtp_file, version )
             rdic[res.resname] = mtp
             hybrid_res = mtp[0]
-            atom_names = map(lambda a: a.name, hybrid_res.atoms )
+            atom_names = [a.name for a in hybrid_res.atoms]
             atoms = res.fetchm( atom_names )
             for i, atom in enumerate( hybrid_res.atoms ):
                 atoms[i].atomtypeB = atom.atomtypeB
@@ -766,13 +766,13 @@ def __add_extra_DNA_RNA_impropers(  topol, rlist, func_type, stateA, stateB ):
     extra_impropers = []
     for r in rlist:
         if r.resname in  ['DAT','DAC','DGC','DGT','RAU','RAC','RGC','RGU']:
-            print 'Adding extra improper dihedrals for residue %d-%s' % (r.id, r.resname)
+            print('Adding extra improper dihedrals for residue %d-%s' % (r.id, r.resname))
             alist = r.fetchm(['C1\'','N9','C8','DC2'])
             extra_impropers.append( alist )
             alist = r.fetchm(['C1\'','N9','C4','DC6'])
             extra_impropers.append( alist )
         elif r.resname in ['DTA','DTG','DCG','DCA','RUA','RUG','RCG','RCA']:
-            print 'Adding extra improper dihedrals for residue %d-%s' % (r.id, r.resname)
+            print('Adding extra improper dihedrals for residue %d-%s' % (r.id, r.resname))
             alist = r.fetchm(['C1\'','N1','C6','DC4'])
             extra_impropers.append( alist )
             alist = r.fetchm(['C1\'','N1','C2','DC8'])
@@ -816,11 +816,11 @@ def get_ff_path( ff ):
         elif os.path.isdir(pff):
             ff_path = pff
         else:
-            print >>sys.stderr,' Error: forcefield path "%s" not found' % ff
+            print(' Error: forcefield path "%s" not found' % ff, file=sys.stderr)
             sys.exit(0)
     else:
         ff_path = ff
-    print 'Opening forcefield: %s' % ff_path
+    print('Opening forcefield: %s' % ff_path)
     return ff_path
 
 def main(argv):
@@ -890,15 +890,15 @@ def main(argv):
         input_itp = None
     if input_itp and out_file.split('.')[-1] != 'itp':
         out_file = change_outfile_format(out_file, 'itp')
-        print 'log_> Setting outfile name to %s' % out_file
+        print('log_> Setting outfile name to %s' % out_file)
 
     if input_itp:
 #        print 'log_> Reading input files "%s" and "%s"' % (top_file, input_itp)
 #        topol = Topology( input_itp,  topfile = top_file, version = 'new', ff = cmdl['-ff'] )
-        print 'log_> Reading input .itp file "%s""' % (input_itp)
+        print('log_> Reading input .itp file "%s""' % (input_itp))
         topol = Topology( input_itp,  topfile = None, version = 'new', ff = cmdl['-ff'], ffpath=get_ff_path(cmdl['-ff']) )
     else:
-        print 'log_> Reading input .top file "%s"' % (top_file)
+        print('log_> Reading input .top file "%s"' % (top_file))
         topol = Topology( top_file, topfile=top_file, version = 'new', ff = cmdl['-ff'] )
 
 #    for i in topol.dihedrals:
@@ -915,7 +915,7 @@ def main(argv):
 #           print "typeB"
 #           print atom.typeB
     for r in rlist:
-        print 'log_> Hybrid Residue -> %d | %s ' % (r.id, r.resname )
+        print('log_> Hybrid Residue -> %d | %s ' % (r.id, r.resname ))
 
 
     find_bonded_entries( topol )
@@ -930,8 +930,8 @@ def main(argv):
     qA_mem = copy.deepcopy( qA )
     qB_mem = copy.deepcopy( qB )
 
-    print 'log_> Total charge of state A = ', topol.get_qA()
-    print 'log_> Total charge of state B = ', topol.get_qB()
+    print('log_> Total charge of state A = ', topol.get_qA())
+    print('log_> Total charge of state B = ', topol.get_qB())
 
     topol.write( out_file, scale_mass = do_scale_mass, target_qB = qB )
 
@@ -945,34 +945,34 @@ def main(argv):
         out_file_vdw = root+'_vdw'+ext
         out_file_qon = root+'_qon'+ext
 
-        print '------------------------------------------------------'
-        print 'log_> Creating splitted topologies............'
-        print 'log_> Making "qoff" topology : "%s"' % out_file_qoff
+        print('------------------------------------------------------')
+        print('log_> Creating splitted topologies............')
+        print('log_> Making "qoff" topology : "%s"' % out_file_qoff)
         contQ = copy.deepcopy(qA_mem)
         topol.write( out_file_qoff, stateQ = 'AB', stateTypes = 'AA', dummy_qB='off',
                          scale_mass = do_scale_mass, target_qB = qA, stateBonded = 'AA', full_morphe = False )
-        print 'log_> Charge of state A: %g' % topol.qA
-        print 'log_> Charge of state B: %g' % topol.qB
+        print('log_> Charge of state A: %g' % topol.qA)
+        print('log_> Charge of state B: %g' % topol.qB)
 
-        print '------------------------------------------------------'
-        print 'log_> Making "vdw" topology : "%s"' % out_file_vdw
+        print('------------------------------------------------------')
+        print('log_> Making "vdw" topology : "%s"' % out_file_vdw)
         contQ = copy.deepcopy(qA_mem)
         topol.write( out_file_vdw, stateQ = 'BB', stateTypes = 'AB', dummy_qA='off', dummy_qB = 'off',
                          scale_mass = do_scale_mass, target_qB = contQ, stateBonded = 'AB' , full_morphe = False)
-        print 'log_> Charge of state A: %g' % topol.qA
-        print 'log_> Charge of state B: %g' % topol.qB
-        print '------------------------------------------------------'
+        print('log_> Charge of state A: %g' % topol.qA)
+        print('log_> Charge of state B: %g' % topol.qB)
+        print('------------------------------------------------------')
 
-        print 'log_> Making "qon" topology : "%s"' % out_file_qon
+        print('log_> Making "qon" topology : "%s"' % out_file_qon)
         topol.write( out_file_qon, stateQ = 'BB', stateTypes = 'BB', dummy_qA='off', dummy_qB = 'on',
                          scale_mass = do_scale_mass, target_qB = qB_mem,  stateBonded = 'BB' , full_morphe = False)
-        print 'log_> Charge of state A: %g' % topol.qA
-        print 'log_> Charge of state B: %g' % topol.qB
-        print '------------------------------------------------------'
+        print('log_> Charge of state A: %g' % topol.qA)
+        print('log_> Charge of state B: %g' % topol.qB)
+        print('------------------------------------------------------')
 
-    print
-    print 'making b-states done...........'
-    print
+    print()
+    print('making b-states done...........')
+    print()
 
 
 def entry_point():

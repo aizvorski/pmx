@@ -31,7 +31,7 @@ __doc__="""
 Library for useful and less useful things needed by the pmx packages.
 """
 
-import sys, os, cPickle
+import sys, os, pickle
 
 #pdb_format="%6s%5d %-4s%1s%3s%2s%4d %11.3f %7.3f %7.3f %5.2f %5.2f\n"
 
@@ -51,11 +51,11 @@ def pmx_data_file( filename ):
         pth = PMX_DATA
         data_file = os.path.join(pth,filename)
     if not os.path.isfile(data_file):
-        print >>sys.stderr, "pmx_ERROR> data file \"%s\" not found " % data_file
+        print("pmx_ERROR> data file \"%s\" not found " % data_file, file=sys.stderr)
         sys.exit(1)
-    print >>sys.stderr,"pmx__> Loading data file \"%s\"" % data_file
+    print("pmx__> Loading data file \"%s\"" % data_file, file=sys.stderr)
     if data_file.split('.')[-1] == 'pkl':
-        return cPickle.load(open(data_file))
+        return pickle.load(open(data_file))
     else: return data_file
 
 

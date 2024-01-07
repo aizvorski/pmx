@@ -37,9 +37,9 @@ Take a look there for details...
 import sys
 from numpy import *
 import random
-from atom import *
-from geometry import Rotation
-import library
+from .atom import *
+from .geometry import Rotation
+from . import library
 import copy as cp
 import _pmx
 #import _gridns
@@ -56,7 +56,7 @@ class Atomselection:
     def __init__(self, **kwargs):
         self.atoms = []
         self.unity = 'A'
-        for key, val in kwargs.items():
+        for key, val in list(kwargs.items()):
             setattr(self,key,val)
 
     def writePDB(self,fname,title="",nr=1,bPDBTER=False,bAssignChainIDs=False,resnrlist=[]):
@@ -71,18 +71,18 @@ class Atomselection:
                 title = str(self.__class__)+' '+str(self)
 
         header = 'TITLE    '+title
-        print >>fp, header
-        print >>fp, 'MODEL%5d' % nr
+        print(header, file=fp)
+        print('MODEL%5d' % nr, file=fp)
         if not hasattr(self,"box"):
             self.box = [ [0,0,0], [0,0,0], [0,0,0] ]
         if self.box[XX][XX]*self.box[YY][YY]*self.box[ZZ][ZZ] != 0:
             box_line = _pmx.box_as_cryst1( self.box )
-            print >>fp, box_line
+            print(box_line, file=fp)
 
         chainID = self.atoms[0].chain_id
         for atom in self.atoms:
             if (bPDBTER==True) and (atom.chain_id != chainID):
-                print >>fp, 'TER'
+                print('TER', file=fp)
                 chainID = atom.chain_id
             if (len(resnrlist)>0) and (atom.resnr not in resnrlist):
                 continue
@@ -94,10 +94,10 @@ class Atomselection:
             if( len(atom.name) > 4): # too long atom name
                 foo = cp.deepcopy(atom)
                 foo.name = foo.name[:4]
-                print >>fp, foo
+                print(foo, file=fp)
             else:
-                print >>fp, atom
-        print >>fp, 'ENDMDL'
+                print(atom, file=fp)
+        print('ENDMDL', file=fp)
         fp.close()
 
 
@@ -110,8 +110,8 @@ class Atomselection:
                 title = self.title
             else:
                 title = str(self.__class__)+' '+str(self)
-        print >>fp, title
-        print >>fp, "%5d" % len(self.atoms)
+        print(title, file=fp)
+        print("%5d" % len(self.atoms), file=fp)
         if self.atoms[0].v[0] != 0.000 : bVel = True
         else: bVel = False
         if bVel:
@@ -127,7 +127,7 @@ class Atomselection:
                                   atom.v[XX], atom.v[YY], atom.v[ZZ])
             else:
                 ff+=gro_format % (atom.x[XX]*fac, atom.x[YY]*fac, atom.x[ZZ]*fac )
-            print >>fp, ff
+            print(ff, file=fp)
 
         if not hasattr(self,"box"):
             self.box = [ [0,0,0], [0,0,0], [0,0,0] ]
@@ -139,11 +139,11 @@ class Atomselection:
             bTric = True
             ff = "%10.5f%10.5f%10.5f"
         if bTric:
-            print >>fp, ff % (self.box[XX][XX],self.box[YY][YY],self.box[ZZ][ZZ])
+            print(ff % (self.box[XX][XX],self.box[YY][YY],self.box[ZZ][ZZ]), file=fp)
         else:
-            print >>fp, ff % (self.box[XX][XX],self.box[YY][YY],self.box[ZZ][ZZ],
+            print(ff % (self.box[XX][XX],self.box[YY][YY],self.box[ZZ][ZZ],
                               self.box[XX][YY],self.box[XX][ZZ],self.box[YY][XX],
-                              self.box[YY][ZZ],self.box[ZZ][XX],self.box[ZZ][YY])
+                              self.box[YY][ZZ],self.box[ZZ][XX],self.box[ZZ][YY]), file=fp)
         fp.close()
 
     def write(self,fn, title = '', nr = 1):
@@ -153,7 +153,7 @@ class Atomselection:
         elif ext == 'gro':
             self.writeGRO( fn, title )
         else:
-            print >>sys.stderr, 'pmx_Error_> Can only write pdb or gro!'
+            print('pmx_Error_> Can only write pdb or gro!', file=sys.stderr)
             sys.exit(1)
 
 
@@ -162,12 +162,12 @@ class Atomselection:
         """move atoms to center of mass or return vector only"""
         for atom in self.atoms:
             if atom.m == 0:
-                print >>sys.stderr, " Warning: Atom has zero mass: setting mass to 1."
+                print(" Warning: Atom has zero mass: setting mass to 1.", file=sys.stderr)
                 atom.m = 1.
-        x = sum(map(lambda a: a.x[0]*a.m, self.atoms))
-        y = sum(map(lambda a: a.x[1]*a.m, self.atoms))
-        z = sum(map(lambda a: a.x[2]*a.m, self.atoms))
-        M = sum(map(lambda a: a.m, self.atoms))
+        x = sum([a.x[0]*a.m for a in self.atoms])
+        y = sum([a.x[1]*a.m for a in self.atoms])
+        z = sum([a.x[2]*a.m for a in self.atoms])
+        M = sum([a.m for a in self.atoms])
         x/=M
         y/=M
         z/=M
@@ -185,7 +185,7 @@ class Atomselection:
         """ return a list of atom objects
         found in topDic"""
         self.atoms=[]
-        for idx in topDic['atoms'].keys():
+        for idx in list(topDic['atoms'].keys()):
             at=Atom().atomFromTop(topDic,idx)
             self.atoms.append(at)
         return self
@@ -230,9 +230,9 @@ class Atomselection:
 
 
     def max_crd(self):
-        x = map(lambda a: a.x[0], self.atoms)
-        y = map(lambda a: a.x[1], self.atoms)
-        z = map(lambda a: a.x[2], self.atoms)
+        x = [a.x[0] for a in self.atoms]
+        y = [a.x[1] for a in self.atoms]
+        z = [a.x[2] for a in self.atoms]
         return (min(x),max(x)),(min(y),max(y)),(min(z),max(z))
 
     def search_neighbors(self, cutoff = 8., build_bonds = True ):
@@ -245,7 +245,7 @@ class Atomselection:
 
 
     def coords(self):
-        return map(lambda a: a.x, self.atoms)
+        return [a.x for a in self.atoms]
 
 
     def fetch_atoms(self,key,how='byname',wildcard=False,inv=False):
@@ -343,7 +343,7 @@ class Atomselection:
                     newl.append((at1,at2,tp))
                     check = True
             if not check:
-                print 'bondtype %s-%s defaults to 1' % (at1.atype, at2.atype)
+                print('bondtype %s-%s defaults to 1' % (at1.atype, at2.atype))
                 newl.append((at1,at2,'1'))
         self.bondlist = newl
 

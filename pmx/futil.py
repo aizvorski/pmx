@@ -43,20 +43,20 @@ def ffopen(filename,mode='r',backup = True):
     if mode == 'w':
         if os.path.isfile(filename):
             if backup:
-                print 'Backing up %s to %s~' % (filename,filename)
+                print('Backing up %s to %s~' % (filename,filename))
                 os.rename(filename,filename+'~')
         try:
             fp = open(filename,'w')
             return fp
         except:
-            print 'Error: Could not open file %s' % filename
+            print('Error: Could not open file %s' % filename)
 
     elif mode == 'r':
         try:
             fp = open(filename,'r')
             return fp
         except:
-            print 'No such file %s' % filename
+            print('No such file %s' % filename)
 
     else:
         return open(filename,mode)
@@ -90,8 +90,8 @@ def listFiles(dir='./',ext=None,abs=True,\
                 else:
                     fl.append(dir+f)
 
-    elif type(ext) in [types.ListType,\
-                       types.TupleType]:
+    elif type(ext) in [list,\
+                       tuple]:
         for ex in ext:
             if backups:
                 ff = glob(dir+'#*'+ex+'*')
@@ -100,9 +100,9 @@ def listFiles(dir='./',ext=None,abs=True,\
                 ff = glob(dir+'*.'+ex)
             fl.extend(ff)
 
-    elif type(ext) == types.StringType:
+    elif type(ext) == bytes:
         if backups:
-            print dir+'*.'+ext+'~'
+            print(dir+'*.'+ext+'~')
             fl = glob(dir+'#*.'+ext+'*')
             fl+= glob(dir+'*.'+ext+'~')
         else:
@@ -147,7 +147,7 @@ def killBackups(arg,dirname,fname):
     l = listFiles(dirname,arg[0],arg[1],arg[2])
     if arg[3]:
         for f in l:
-            print '%s' % f
+            print('%s' % f)
 #    print 'dir:', dirname
 #    print 'fname' ,fname
 

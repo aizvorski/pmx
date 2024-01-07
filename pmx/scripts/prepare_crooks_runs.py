@@ -30,7 +30,7 @@
 # ----------------------------------------------------------------------
 
 import sys, os, shutil
-import commands
+import subprocess
 from glob import glob
 from pmx.forcefield import MDP
 from pmx import *
@@ -38,17 +38,17 @@ from pmx import *
 def run_command( func, string ):
     s = func.__name__+'(): '+ string
     err_file = func.__name__+'_ERROR.log'
-    status, out = commands.getstatusoutput( string )
+    status, out = subprocess.getstatusoutput( string )
     if status != 0:
-        print >>sys.stderr, 'ERROR in %s ' % func.__name__
-        print >>sys.stderr, 'Output written to %s'  % err_file
+        print('ERROR in %s ' % func.__name__, file=sys.stderr)
+        print('Output written to %s'  % err_file, file=sys.stderr)
         fp = open(err_file,'w')
-        print >>fp, s
-        print >>fp, out
+        print(s, file=fp)
+        print(out, file=fp)
         fp.close()
         sys.exit(1)
     else:
-        print "%-90s" % s, ': ok'
+        print("%-90s" % s, ': ok')
 
 
 
@@ -57,7 +57,7 @@ def make_dir_tree( skip = 4):
     # catch all run?.? dirs
     dirs = glob('run?.?')
     for d in dirs:
-        print '\tPreparing run %s' % d
+        print('\tPreparing run %s' % d)
         os.chdir(d)
         os.mkdir('morphes')
         cmd = 'echo 0| trjconv -f traj.trr -s topol.tpr -skip %d -b 2001 -sep -o morphes/frame.gro' % skip
@@ -90,7 +90,7 @@ def prepare_mdp_files( template_mdp, sw_time, sc_alpha, sc_sigma ):
     mdp['sc-sigma'] = sc_sigma
 
     fp = open('crooks_TI_runA.mdp','w')
-    print >>fp, mdp
+    print(mdp, file=fp)
     fp.close()
 
     # make 1->0 file
@@ -98,7 +98,7 @@ def prepare_mdp_files( template_mdp, sw_time, sc_alpha, sc_sigma ):
     mdp['delta-lambda'] = -delta_lambda
 
     fp = open('crooks_TI_runB.mdp','w')
-    print >>fp, mdp
+    print(mdp, file=fp)
     fp.close()
 
 
@@ -106,7 +106,7 @@ def make_run_input_files():
 
     dirs = glob('run?.?')
     for d in dirs:
-        print '\n\tPreparing run input files %s' % d
+        print('\n\tPreparing run input files %s' % d)
         mdp_file = None
         if d.split('.')[0][-1] == 'A': # 0->1
             mdp_file = 'crooks_TI_runA.mdp'
@@ -172,26 +172,26 @@ def main(argv):
     sc_alpha = cmdl['-sc_alpha']
     sc_sigma = cmdl['-sc_sigma']
 
-    print '\n\t Preparing FGTI runs in directory..: %s' % run_dir
-    print '\t Template mdp file to use............: %s' % mdp_file
-    print '\t Switching time to use...............: %8d ps' % int( sw_time )
-    print '\t Soft-core alpha to use..............: %8.3f' % sc_alpha
-    print '\t Soft-core sigma to use..............: %8.3f' % sc_sigma
-    print '\n'
+    print('\n\t Preparing FGTI runs in directory..: %s' % run_dir)
+    print('\t Template mdp file to use............: %s' % mdp_file)
+    print('\t Switching time to use...............: %8d ps' % int( sw_time ))
+    print('\t Soft-core alpha to use..............: %8.3f' % sc_alpha)
+    print('\t Soft-core sigma to use..............: %8.3f' % sc_sigma)
+    print('\n')
 
 
     os.chdir( run_dir )
 
-    print '\t Preparing mdp input files........... '
+    print('\t Preparing mdp input files........... ')
 
     prepare_mdp_files( mdp_file, sw_time, sc_alpha, sc_sigma )
 
 
-    print '\t Preparing directory tree............ '
+    print('\t Preparing directory tree............ ')
     make_dir_tree(skip = cmdl['-skip'])
     make_run_input_files()
     os.chdir( here )
-    print '\n\t............... DONE .................\n'
+    print('\n\t............... DONE .................\n')
 
 
 if __name__=='__main__':

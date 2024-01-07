@@ -35,12 +35,12 @@ def check_if_exclusion_valid( exclusions, ex ):
     for excl in exclusions:
         if excl[0]==ex[0]: # some interactions for this atom are already excluded
             if len(excl)!=len(ex): # the exclusion lists are of different length
-                print('ERROR: Something wrong with exclusions: ',excl,ex)
+                print(('ERROR: Something wrong with exclusions: ',excl,ex))
                 sys.exit(1)
             else:
                 for e in excl[1:]:
                     if e not in ex:
-                        print('ERROR: Something wrong with exclusions: ',excl,ex)
+                        print(('ERROR: Something wrong with exclusions: ',excl,ex))
                         sys.exit(1)
     return(True)
 
@@ -112,7 +112,7 @@ def reformatPDB(filename,num,bStrict=False):
 def restoreAtomNames(mol,atomNameDict):
     for atom in mol.GetAtoms():
         newname = atom.GetMonomerInfo().GetName()
-        if newname in atomNameDict.keys():
+        if newname in list(atomNameDict.keys()):
             oldname = atomNameDict[newname]
             atom.GetMonomerInfo().SetName(oldname)
 
@@ -126,25 +126,25 @@ def writeFormatPDB(fname,m,title="",nr=1,bStrict=False):
         # chlorine
         if( 'CL' in atom.name or 'Cl' in atom.name or 'cl' in atom.name ):
             foo.name = "CL"+"  "
-            print >>fp, foo
+            print(foo, file=fp)
         # bromine
         elif( 'BR' in atom.name or 'Br' in atom.name or 'br' in atom.name ):
             foo.name = "BR"+"  "
-            print >>fp, foo
+            print(foo, file=fp)
         elif( len(atom.name) > atNameLen): # too long atom name
             foo = xcopy.deepcopy(atom)
             foo.name = foo.name[:atNameLen]
-            print >>fp, foo
+            print(foo, file=fp)
         else:
-            print >>fp, atom
-    print >>fp, 'ENDMDL'
+            print(atom, file=fp)
+    print('ENDMDL', file=fp)
     fp.close()
 
 
 def do_log(fp, s):
     l = "make_hybrid__log_> "+s
-    print >>sys.stderr, l
-    print >>fp, l
+    print(l, file=sys.stderr)
+    print(l, file=fp)
 
 
 def make_pairs(m1, m2, m3, m4, bFit, bDist, dd, plist = None, grps = None):
@@ -609,7 +609,7 @@ def main(argv):
             mol2 = Chem.MolFromPDBFile(pdbName2,removeHs=False,sanitize=False)
             os.remove(pdbName1)
             os.remove(pdbName2)
-            Chem.rdMolAlign.AlignMol(mol2,mol1,atomMap=zip(n2,n1))
+            Chem.rdMolAlign.AlignMol(mol2,mol1,atomMap=list(zip(n2,n1)))
         except:
             pdbName1,atomNameDict1 = reformatPDB(cmdl['-l1'],1,bStrict=True)
             pdbName2,atomNameDict2 = reformatPDB(cmdl['-l2'],2,bStrict=True)
@@ -617,7 +617,7 @@ def main(argv):
             mol2 = Chem.MolFromPDBFile(pdbName2,removeHs=False,sanitize=False)
             os.remove(pdbName1)
             os.remove(pdbName2)
-            Chem.rdMolAlign.AlignMol(mol2,mol1,atomMap=zip(n2,n1))
+            Chem.rdMolAlign.AlignMol(mol2,mol1,atomMap=list(zip(n2,n1)))
         # adjust coordinates of m2
         adjustCoords(m2,mol2)
         restoreAtomNames(mol1,atomNameDict1)
@@ -631,7 +631,7 @@ def main(argv):
             mol2 = Chem.MolFromPDBFile(pdbName2,removeHs=False,sanitize=False)
             os.remove(pdbName1)
             os.remove(pdbName2)
-            Chem.rdMolAlign.AlignMol(mol1,mol2,atomMap=zip(n1,n2))
+            Chem.rdMolAlign.AlignMol(mol1,mol2,atomMap=list(zip(n1,n2)))
         except:
             pdbName1,atomNameDict1 = reformatPDB(cmdl['-l1'],1,bStrict=True)
             pdbName2,atomNameDict2 = reformatPDB(cmdl['-l2'],2,bStrict=True)
@@ -639,7 +639,7 @@ def main(argv):
             mol2 = Chem.MolFromPDBFile(pdbName2,removeHs=False,sanitize=False)
             os.remove(pdbName1)
             os.remove(pdbName2)
-            Chem.rdMolAlign.AlignMol(mol1,mol2,atomMap=zip(n1,n2))
+            Chem.rdMolAlign.AlignMol(mol1,mol2,atomMap=list(zip(n1,n2)))
         # adjust coordinates of m1
         adjustCoords(m3,mol1)
         restoreAtomNames(mol1,atomNameDict1)
@@ -649,8 +649,8 @@ def main(argv):
     bDist = True
     pairs = make_pairs(m1, m2, m3, m4, bFit, bDist,dist, plst, grps)
 
-    morphsA = map(lambda p: p[1], pairs)
-    morphsB = map(lambda p: p[0], pairs)
+    morphsA = [p[1] for p in pairs]
+    morphsB = [p[0] for p in pairs]
     dumsA = []
     dumsA_nofit = []
     if(bFit==False):
@@ -1261,44 +1261,44 @@ def main(argv):
         out_file_qon = root+'_qon'+ext
 
 
-        print '------------------------------------------------------'
-        print 'log_> Creating splitted topologies............'
-        print 'log_> Making "qoff" topology : "%s"' % out_file_qoff
+        print('------------------------------------------------------')
+        print('log_> Creating splitted topologies............')
+        print('log_> Making "qoff" topology : "%s"' % out_file_qoff)
         contQ = xcopy.deepcopy(qA_mem)
         newitp.write( out_file_qoff, stateQ = 'AB', stateTypes = 'AA', dummy_qB='off',
                       scale_mass = bScaleMass, target_qB = qA, stateBonded = 'AA', full_morphe = False )
-        print 'log_> Charge of state A: %g' % newitp.qA
-        print 'log_> Charge of state B: %g' % newitp.qB
+        print('log_> Charge of state A: %g' % newitp.qA)
+        print('log_> Charge of state B: %g' % newitp.qB)
 
-        print '------------------------------------------------------'
-        print 'log_> Making "vdw" topology : "%s"' % out_file_vdw
+        print('------------------------------------------------------')
+        print('log_> Making "vdw" topology : "%s"' % out_file_vdw)
         contQ = xcopy.deepcopy(qA_mem)
         newitp.write( out_file_vdw, stateQ = 'BB', stateTypes = 'AB', dummy_qA='off', dummy_qB = 'off',
                       scale_mass = bScaleMass, target_qB = contQ, stateBonded = 'AB' , full_morphe = False)
-        print 'log_> Charge of state A: %g' % newitp.qA
-        print 'log_> Charge of state B: %g' % newitp.qB
-        print '------------------------------------------------------'
+        print('log_> Charge of state A: %g' % newitp.qA)
+        print('log_> Charge of state B: %g' % newitp.qB)
+        print('------------------------------------------------------')
 
-        print 'log_> Making "qon" topology : "%s"' % out_file_qon
+        print('log_> Making "qon" topology : "%s"' % out_file_qon)
         newitp.write( out_file_qon, stateQ = 'BB', stateTypes = 'BB', dummy_qA='off', dummy_qB = 'on',
                       scale_mass = bScaleMass, target_qB = qB_mem,  stateBonded = 'BB' , full_morphe = False)
-        print 'log_> Charge of state A: %g' % newitp.qA
-        print 'log_> Charge of state B: %g' % newitp.qB
-        print '------------------------------------------------------'
+        print('log_> Charge of state A: %g' % newitp.qA)
+        print('log_> Charge of state B: %g' % newitp.qB)
+        print('------------------------------------------------------')
 
 
     # write ffitp
     fp = open(cmdl['-ffitp'],'w')
     dd = []
-    print >>fp, '[ atomtypes ]'
+    print('[ atomtypes ]', file=fp)
     for atom in m1.atoms:
         if atom.atomtype.startswith('DUM') and atom.atomtype not in dd:
-            print >>fp, '%8s %12.6f %12.6f %3s %12.6f %12.6f' % \
-                  (atom.atomtype, 0, 0, 'A',0,0)
+            print('%8s %12.6f %12.6f %3s %12.6f %12.6f' % \
+                  (atom.atomtype, 0, 0, 'A',0,0), file=fp)
             dd.append(atom.atomtype)
         elif atom.atomtypeB.startswith('DUM') and atom.atomtypeB not in dd:
-            print >>fp, '%8s %12.6f %12.6f %3s %12.6f %12.6f' % \
-                  (atom.atomtypeB, 0, 0, 'A',0,0)
+            print('%8s %12.6f %12.6f %3s %12.6f %12.6f' % \
+                  (atom.atomtypeB, 0, 0, 'A',0,0), file=fp)
             dd.append(atom.atomtypeB)
 
     # write merged pdb

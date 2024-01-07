@@ -140,7 +140,7 @@ class Frame:
 
 
 class XDRFile:
-    exdrOK, exdrHEADER, exdrSTRING, exdrDOUBLE, exdrINT, exdrFLOAT, exdrUINT, exdr3DX, exdrCLOSE, exdrMAGIC, exdrNOMEM, exdrENDOFFILE, exdrNR = range(13)
+    exdrOK, exdrHEADER, exdrSTRING, exdrDOUBLE, exdrINT, exdrFLOAT, exdrUINT, exdr3DX, exdrCLOSE, exdrMAGIC, exdrNOMEM, exdrENDOFFILE, exdrNR = list(range(13))
 
     #
     def __init__(self,fn,mode="Auto",ft="Auto",atomNum=False):
@@ -189,7 +189,7 @@ class XDRFile:
         natoms=c_int()
         if self.mode==out_mode:
             if atomNum==False:
-                raise StandardError("To write an .xtc need to provide the number of atoms")
+                raise Exception("To write an .xtc need to provide the number of atoms")
             self.natoms = atomNum
         else:
             if self.mode&mTrr:

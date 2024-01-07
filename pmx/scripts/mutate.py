@@ -208,7 +208,7 @@ def check_residue_name( res ):
             res.set_resname('GLH')
     elif res.resname == 'CYS':
         if not res.has_atom('HG'):
-            print >>sys.stderr,' Cannot mutate SS-bonded Cys %d' % res.id
+            print(' Cannot mutate SS-bonded Cys %d' % res.id, file=sys.stderr)
 
 def check_OPLS_LYS( res ):
     if res.has_atom( 'HZ3'):
@@ -227,33 +227,33 @@ def read_script(fn):
     return read_and_format(fn,"is")
 
 def int_input():
-    inp = raw_input()
+    inp = input()
     try:
         inp = int(inp)
         return inp
     except:
-        print 'You entered "%s" -> Try again' % inp
+        print('You entered "%s" -> Try again' % inp)
         return None
 
 def check_residue_range(m, idx):
-    valid_ids = range(1, len(m.residues)+1)
+    valid_ids = list(range(1, len(m.residues)+1))
     if idx not in valid_ids: return False
     return True
 
 def select_residue(m):
-    valid_ids = range(1, len(m.residues)+1)
-    print '\nSelect residue to mutate:'
+    valid_ids = list(range(1, len(m.residues)+1))
+    print('\nSelect residue to mutate:')
     for i,r in enumerate(m.residues):
         if r.resname not in library._ions+library._water:
             sys.stdout.write('%6d-%s-%s' % (r.id,r.resname,r.chain_id))
-            if r.id % 6 == 0: print
-    print
+            if r.id % 6 == 0: print()
+    print()
     selected_residue_id = None
     while not selected_residue_id:
         sys.stdout.write('Enter residue number: ')
         selected_residue_id = int_input()
         if selected_residue_id is not None and selected_residue_id not in valid_ids:
-            print 'Residue id %d not in range %d-%d -> Try again' % (selected_residue_id,1,len(residues))
+            print('Residue id %d not in range %d-%d -> Try again' % (selected_residue_id,1,len(residues)))
             selected_residue_id = None
     return selected_residue_id
 
@@ -267,10 +267,10 @@ def select_mutation(m, selected_residue_id, ffpath):
 
 def select_nuc_mutation(residue):
     aa = None
-    print '\nSelect new base for %s-%s: ' % (residue.id,residue.resname)
+    print('\nSelect new base for %s-%s: ' % (residue.id,residue.resname))
     sys.stdout.write('One-letter code: ')
     while aa is None:
-        aa = raw_input().upper()
+        aa = input().upper()
         if get_restype(residue) == 'DNA' and aa not in ['A','C','G','T']:
             sys.stdout.write('Unknown DNA residue "%s"!\nOne-letter code: ' % aa)
             aa = None
@@ -278,12 +278,12 @@ def select_nuc_mutation(residue):
             sys.stdout.write('Unknown RNA residue "%s"!\nOne-letter code: ' % aa)
             aa = None
         if aa:
-            print 'Will apply mutation %s->%s on residue %s-%d' % (residue.resname[1],aa,residue.resname,residue.id)
+            print('Will apply mutation %s->%s on residue %s-%d' % (residue.resname[1],aa,residue.resname,residue.id))
         return aa
 
 def select_aa_mutation(residue,ffpath):
     check_residue_name( residue )
-    print '\nSelect new amino acid for %s-%s: ' % (residue.id,residue.resname)
+    print('\nSelect new amino acid for %s-%s: ' % (residue.id,residue.resname))
     sys.stdout.write('Three- or one-letter code (or four-letter for ff specific residues): ')
     if residue.resname in ['HIE','HISE','HSE']: rol = 'X'
     elif residue.resname in ['HIP','HISH','HSP']: rol = 'Z'
@@ -293,21 +293,21 @@ def select_aa_mutation(residue,ffpath):
     else:
         rol = library._one_letter[residue.resname]
     aa = None
-    ol = library._aacids_dic.keys()
-    tl = library._aacids_dic.values()
+    ol = list(library._aacids_dic.keys())
+    tl = list(library._aacids_dic.values())
     ffpathlower = ffpath.lower()
     if('amber' in ffpathlower):
-        ol = library._aacids_ext_amber.keys()
-        tl = library._aacids_ext_amber.values()
+        ol = list(library._aacids_ext_amber.keys())
+        tl = list(library._aacids_ext_amber.values())
     if('opls' in ffpathlower):
-        ol = library._aacids_ext_oplsaa.keys()
-        tl = library._aacids_ext_oplsaa.values()+['ASPP','GLUP','LSN']
+        ol = list(library._aacids_ext_oplsaa.keys())
+        tl = list(library._aacids_ext_oplsaa.values())+['ASPP','GLUP','LSN']
     if('charmm' in ffpathlower):
-        ol = library._aacids_ext_charmm.keys()
-        tl = library._aacids_ext_charmm.values()
+        ol = list(library._aacids_ext_charmm.keys())
+        tl = list(library._aacids_ext_charmm.values())
 
     while aa is None:
-        aa = raw_input().upper()
+        aa = input().upper()
         if len(aa) != 1 and len(aa)!=3 and len(aa)!=4:
             sys.stdout.write('Nope!\nThree- or one-letter code (or four-letter for ff specific residues): ')
             aa = None
@@ -315,7 +315,7 @@ def select_aa_mutation(residue,ffpath):
             sys.stdout.write('Unknown aa "%s"!\nThree- or one-letter code (or four-letter for ff specific residues): ' % aa)
             aa = None
         if aa and (len(aa)==3 or len(aa)==4): aa = ext_one_letter[aa]
-    print 'Will apply mutation %s->%s on residue %s-%d' % (rol,aa,residue.resname,residue.id)
+    print('Will apply mutation %s->%s on residue %s-%d' % (rol,aa,residue.resname,residue.id))
     return aa
 
 
@@ -326,7 +326,7 @@ def interactive_selection(m,ffpath):
 
 def ask_next():
     sys.stdout.write('\nApply another mutation [y/n]? ')
-    res = raw_input().lower()
+    res = input().lower()
     if res == 'y': return True
     elif res == 'n': return False
     else: return ask_next()
@@ -368,11 +368,11 @@ def rename_back( res, name_hash ):
 def set_conformation(old_res, new_res, rotdic):
     old_res.get_real_resname()
     dihedrals = library._aa_dihedrals[old_res.real_resname]
-    for key, lst in rotdic.items():
+    for key, lst in list(rotdic.items()):
         new = new_res.fetchm(lst)
         rotdic[key] = new
     chis = []
-    for key in rotdic.keys():
+    for key in list(rotdic.keys()):
         at1,at2 = key.split('-')
         for d in dihedrals:
             if d[1] == at1 and d[2] == at2 \
@@ -427,9 +427,9 @@ def apply_nuc_mutation(m, residue, new_nuc_name, mtp_file, bRNA=False):
 
 #    hybrid_residue_name = residue.resname+new_nuc_name
     hybrid_residue_name,resname1,resname2 = get_nuc_hybrid_resname(residue,new_nuc_name,bRNA)
-    print 'log_> Residue to mutate: %d | %s | %s ' % ( residue.id, residue.resname, residue.chain_id)
-    print 'log_> Mutation to apply: %s->%s' % (residue.resname[1], new_nuc_name)
-    print 'log_> Hybrid residue name: %s' % hybrid_residue_name
+    print('log_> Residue to mutate: %d | %s | %s ' % ( residue.id, residue.resname, residue.chain_id))
+    print('log_> Mutation to apply: %s->%s' % (residue.resname[1], new_nuc_name))
+    print('log_> Hybrid residue name: %s' % hybrid_residue_name)
     hybrid_res, bonds, imps, diheds, rotdic = get_hybrid_residue(hybrid_residue_name, mtp_file)
 #    hybrid_res.nm2a()
 
@@ -438,8 +438,8 @@ def apply_nuc_mutation(m, residue, new_nuc_name, mtp_file, bRNA=False):
         if atom.name[0] != 'D':
             atom.x = residue[atom.name].x
     m.replace_residue( residue, hybrid_res)
-    print 'log_> Inserted hybrid residue %s at position %d (chain %s)' %\
-          (hybrid_res.resname, hybrid_res.id, hybrid_res.chain_id)
+    print('log_> Inserted hybrid residue %s at position %d (chain %s)' %\
+          (hybrid_res.resname, hybrid_res.id, hybrid_res.chain_id))
 
 
 def apply_aa_mutation(m, residue, new_aa_name, mtp_file, bStrB, infileB):
@@ -454,13 +454,13 @@ def apply_aa_mutation(m, residue, new_aa_name, mtp_file, bStrB, infileB):
         olkey = check_OPLS_LYS( residue )
 
     hybrid_residue_name = olkey+'2'+new_aa_name
-    if hybrid_residue_name in noncanonical_aa.keys():
+    if hybrid_residue_name in list(noncanonical_aa.keys()):
         hybrid_residue_name = noncanonical_aa[hybrid_residue_name]
 #    if hybrid_residue_name in longname_aa.keys():
 #        hybrid_residue_name = longname_aa[hybrid_residue_name]
-    print 'log_> Residue to mutate: %d | %s | %s ' % ( residue.id, residue.resname, residue.chain_id)
-    print 'log_> Mutation to apply: %s->%s' % (olkey, new_aa_name)
-    print 'log_> Hybrid residue name: %s' % hybrid_residue_name
+    print('log_> Residue to mutate: %d | %s | %s ' % ( residue.id, residue.resname, residue.chain_id))
+    print('log_> Mutation to apply: %s->%s' % (olkey, new_aa_name))
+    print('log_> Hybrid residue name: %s' % hybrid_residue_name)
     hybrid_res, bonds, imps, diheds, rotdic = get_hybrid_residue(hybrid_residue_name, mtp_file)
     #hybrid_res.nm2a()
     bb_super(residue, hybrid_res )
@@ -470,7 +470,7 @@ def apply_aa_mutation(m, residue, new_aa_name, mtp_file, bStrB, infileB):
     hash2 = rename_to_match_library(hybrid_res)
     set_conformation(residue, hybrid_res, rotdic)
     if bStrB:
-        print "log_> Set Bstate geometry according to the provided structure"
+        print("log_> Set Bstate geometry according to the provided structure")
         mB = Model(infileB,bPDBTER=True)
         rename_atoms_to_gromacs( mB )
         mB.nm2a()
@@ -486,8 +486,8 @@ def apply_aa_mutation(m, residue, new_aa_name, mtp_file, bStrB, infileB):
     ## VG rename residue atoms back
 
     m.replace_residue( residue, hybrid_res)
-    print 'log_> Inserted hybrid residue %s at position %d (chain %s)' %\
-          (hybrid_res.resname, hybrid_res.id, hybrid_res.chain_id)
+    print('log_> Inserted hybrid residue %s at position %d (chain %s)' %\
+          (hybrid_res.resname, hybrid_res.id, hybrid_res.chain_id))
 
 
 def apply_mutation(m, mut, mtp_file, bStrB, infileB, bRNA):
@@ -504,7 +504,7 @@ def apply_mutation(m, mut, mtp_file, bStrB, infileB, bRNA):
 
 
 def get_hybrid_residue(residue_name, mtp_file = 'ffamber99sb.mtp'):
-    print 'log_> Scanning database for %s ' % residue_name
+    print('log_> Scanning database for %s ' % residue_name)
     resi, bonds, imps, diheds, rotdic = read_mtp_entry(residue_name, filename = mtp_file, version = 'new')
     if len(resi.atoms) == 0:
         raise mtpError("Hybrid residue %s not found in %s" % (residue_name, mtp_file) )
@@ -518,7 +518,7 @@ def rename_ile(residue):
            'HD2':'HD12',
            'HD3':'HD13'
            }
-    for key, value in dic.items():
+    for key, value in list(dic.items()):
         try:
             atom = residue[key]
             atom.name = value
@@ -552,11 +552,11 @@ def get_ff_path( ff ):
         elif os.path.isdir(pff):
             ff_path = pff
         else:
-            print >>sys.stderr,' Error: forcefield path "%s" not found' % ff
+            print(' Error: forcefield path "%s" not found' % ff, file=sys.stderr)
             sys.exit(0)
     else:
         ff_path = ff
-    print 'Opening forcefield: %s' % ff_path
+    print('Opening forcefield: %s' % ff_path)
     return ff_path
 
 
@@ -620,11 +620,11 @@ def main(argv):
     bRNA = cmdl['-rna']
 
     if cmdl['-resinfo']:
-        print 'Residue dictionary:'
-        lst = ext_one_letter.items()
+        print('Residue dictionary:')
+        lst = list(ext_one_letter.items())
         lst.sort(lambda a,b: cmp(a,b))
         for key, val in lst:
-            print "%5s %4s" % (key, val)
+            print("%5s %4s" % (key, val))
         sys.exit(0)
 
     bStrB = False
@@ -663,9 +663,9 @@ def main(argv):
 
 
     m.write(cmdl['-o'],bPDBTER=True)
-    print
-    print 'mutations done...........'
-    print
+    print()
+    print('mutations done...........')
+    print()
 
 
 def entry_point():

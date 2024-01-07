@@ -45,11 +45,11 @@ Usage:
 
 """
 import sys, os
-from library import pmx_data_file
-from geometry import *
-from chain import *
-from atom import Atom
-from model import Model
+from .library import pmx_data_file
+from .geometry import *
+from .chain import *
+from .atom import Atom
+from .model import Model
 
 
 def cross(x,y):
@@ -180,8 +180,8 @@ def build_rna_strand(seq):
 
 def get_fragments():
     dic = pmx_data_file('fragments.pkl')
-    n = len(dic.keys())
-    print >>sys.stderr,"pmx__> # Fragments loaded: %d" % n
+    n = len(list(dic.keys()))
+    print("pmx__> # Fragments loaded: %d" % n, file=sys.stderr)
     return dic
 
 
@@ -207,14 +207,14 @@ def write_pdb_with_connect(mol, f, n = 1):
         fp = open(f,"w")
     else:
         fp = f
-    print >>fp, "MODEL%5d" % n
+    print("MODEL%5d" % n, file=fp)
     for atom in mol.atoms:
-        print  >>fp, atom
+        print(atom, file=fp)
     for atom in mol.atoms:
         s= "CONECT%5d" % atom.id
         for a in atom.bonds:
             s+='%5d' % a.id
-        print >>fp, s
+        print(s, file=fp)
 
 
 def attach_group(atom, mol):
@@ -264,8 +264,8 @@ def make_residue(key,hydrogens = True):
     """ returns a molecule object with
     default geometry"""
 
-    if not library._aacids.has_key(key):
-        raise KeyError, "Residue %s not known" % key
+    if key not in library._aacids:
+        raise KeyError("Residue %s not known" % key)
     m = Molecule()
     m.unity = 'A'
     m.resname = key

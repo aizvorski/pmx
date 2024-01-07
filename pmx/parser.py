@@ -45,7 +45,7 @@ Usage:
 """
 
 import sys
-from odict import *
+from .odict import *
 
 class ParserError(Exception):
     def __init__(self, s):
@@ -158,6 +158,6 @@ def read_xvg( fn,  style='xy'):
     if style == 'list':
         return res
     else:
-        x = map(lambda a: a[0],  res)
-        y = map(lambda a: a[1],  res)
+        x = [a[0] for a in res]
+        y = [a[1] for a in res]
         return x,  y

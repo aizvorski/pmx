@@ -39,7 +39,7 @@ def get_atoms( ffs ):
     for ffile in ffs:
         ff = FFfile(ffile)
         for at1 in ff.atoms:
-            if at1.type in atoms.keys(): # check if atom type already exists
+            if at1.type in list(atoms.keys()): # check if atom type already exists
                 at2 = atoms[at1.type]
                 if (at1.type == at2.type and at1.sigmaA == at2.sigmaA and at1.epsA == at2.epsA and at1.sigmaB == at2.sigmaB and at1.epsB == at2.epsB):
                     continue
@@ -53,10 +53,10 @@ def get_atoms( ffs ):
 
 def ffwrite(atoms,file):
     fp = open(file,'w')
-    print >>fp, '[ atomtypes ]'
-    for atype in atoms.keys():
+    print('[ atomtypes ]', file=fp)
+    for atype in list(atoms.keys()):
         at = atoms[atype]
-        print >>fp, '   %s      %s      %s      %s      %s      %s' % (at.type,at.sigmaA,at.epsA,at.A,at.sigmaB,at.epsB)
+        print('   %s      %s      %s      %s      %s      %s' % (at.type,at.sigmaA,at.epsA,at.A,at.sigmaB,at.epsB), file=fp)
 
 def main(argv):
 

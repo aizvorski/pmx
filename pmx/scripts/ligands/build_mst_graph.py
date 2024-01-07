@@ -111,7 +111,7 @@ def plotImages(cmdl,layout,G,nsize,nodeNames,ligImg):
         nodeName = nodeNames[n]
         imgFilename = namePNG+"/"+nodeName+".png"
         if os.path.isfile(imgFilename)==False:
-            print "Image not found: ",imgFilename
+            print("Image not found: ",imgFilename)
             continue
 #        img=mpimg.imread('/home/vgapsys/project/make_hybrid/thrombin_test_set/o3a_mapping/foo/lig_2ZC9.png')
         img=mpimg.imread(imgFilename)
@@ -131,9 +131,9 @@ def edgesRefLig(refLig,nodeNames,mat,cycle):
     edges = []
     # first edges are special
     if cycle==0:
-        for i in xrange(0,shape(mat)[0]):
+        for i in range(0,shape(mat)[0]):
             if nodeNames[i]==refLig:
-                for j in xrange(0,shape(mat)[1]):
+                for j in range(0,shape(mat)[1]):
                     if i==j:
                         continue
                     newEdge = [i,j]
@@ -143,7 +143,7 @@ def edgesRefLig(refLig,nodeNames,mat,cycle):
                 break
     # other edges are different: constructing cycles
     else:
-        for i in xrange(0,shape(mat)[0]):
+        for i in range(0,shape(mat)[0]):
             if nodeNames[i]==refLig:
                 continue
             else:
@@ -159,7 +159,7 @@ def identifyRefLig(mat,cmdlopt,nodeNames):
     if cmdlopt.is_set:
         refName = cmdlopt.value
         if refName not in nodeNames:
-            print "The name provided for the reference ligand is not found among the molecules: ",refName
+            print("The name provided for the reference ligand is not found among the molecules: ",refName)
             sys.exit(1)
     else:
         minRowSum = 999.99
@@ -208,18 +208,18 @@ def writeFormatPDB(fname,m,title="",nr=1):
         # chlorine
         if( 'CL' in atom.name or 'Cl' in atom.name or 'cl' in atom.name ):
             foo.name = "CL"+"  "
-            print >>fp, foo
+            print(foo, file=fp)
         # bromine
         elif( 'BR' in atom.name or 'Br' in atom.name or 'br' in atom.name ):
             foo.name = "BR"+"  "
-            print >>fp, foo
+            print(foo, file=fp)
         elif( len(atom.name) > 4): # too long atom name
             foo = cp.deepcopy(atom)
             foo.name = foo.name[:4]
-            print >>fp, foo
+            print(foo, file=fp)
         else:
-            print >>fp, atom
-    print >>fp, 'ENDMDL'
+            print(atom, file=fp)
+    print('ENDMDL', file=fp)
     fp.close()
 
 def reformatPDB(filename,num):
@@ -253,7 +253,7 @@ def getNodeNames(mat,fileName=None):
     # node names are simply numbers
     if(fileName==None):
         count = 0
-        for n in xrange(0,nodeNum):
+        for n in range(0,nodeNum):
             nodeNames.append(count)
             count = count + 1
     # node names are read from a file
@@ -266,7 +266,7 @@ def getNodeNames(mat,fileName=None):
     return(nodeNames)
 
 def getNodeDegrees(nodeNames,edgeList):
-    nodeConn = [0 for n in xrange(0,len(nodeNames))]
+    nodeConn = [0 for n in range(0,len(nodeNames))]
     for edge in edgeList:
         nodeConn[edge[0]] = nodeConn[edge[0]] + 1
         nodeConn[edge[1]] = nodeConn[edge[1]] + 1
@@ -296,7 +296,7 @@ def modifyMat(edges,mat):
 
 def genGraph(mat,edgeList,nx):
     G=nx.Graph()
-    nodes = range(0,mat.shape[0])
+    nodes = list(range(0,mat.shape[0]))
     G.add_nodes_from(nodes)
     edgesG = []
     for edges in edgeList:
@@ -307,7 +307,7 @@ def genGraph(mat,edgeList,nx):
 
 def genNodeLabels(mat,nodeNames,layout,opt):
     labels = {}
-    nodes = range(0,mat.shape[0])
+    nodes = list(range(0,mat.shape[0]))
     i = 0
     for node,name in zip(nodes,nodeNames):
         labels[i] = name
@@ -315,7 +315,7 @@ def genNodeLabels(mat,nodeNames,layout,opt):
 
     # adjust label positions
     outlayout = cp.deepcopy(layout)
-    for key in layout.keys():
+    for key in list(layout.keys()):
         outlayout[key][0] += opt['nodeLabelOffsetX']
         outlayout[key][1] += opt['nodeLabelOffsetY']
 
@@ -361,7 +361,7 @@ def readMat(fileName):
             dim = len(foo)
             if(rowNum == 0):
                 mat = initMat(dim)
-            for i in xrange(0,dim):
+            for i in range(0,dim):
                 mat[rowNum][i] = float(foo[i])
             rowNum = rowNum + 1
             #print(line)
@@ -369,11 +369,11 @@ def readMat(fileName):
     return(mat)
 
 def initMat(dim):
-    mat = [[0 for x in xrange(dim)] for x in xrange(dim)]
+    mat = [[0 for x in range(dim)] for x in range(dim)]
     return(mat)
 
 def symMat(mat,row):
-    for i in xrange(0,row):
+    for i in range(0,row):
         mat[row][i] = mat[i][row]
     mat[row][row] = 0
     return(mat)
@@ -413,7 +413,7 @@ def doMorphes(pdbs,callString,outMatFile,ligImg=None):
             if pdb2 in visited:
                 continue
             callS = callString+" -i1 "+pdb1+" -i2 "+pdb2+" -score "+outMatFile
-            print callS
+            print(callS)
             os.system(callS)
             fp = open(outMatFile,"r")
             foo = fp.read().rstrip()
@@ -493,12 +493,12 @@ def main(argv):
 
     # pdb_list or rmsd_mat
     if( cmdl.opt['-pdb'].is_set==True ):
-        print "Calculate dissimilarities between the ligands."
+        print("Calculate dissimilarities between the ligands.")
 #       if( (cmdl.opt['-alignment'].is_set==False) and (cmdl.opt['-mcs'].is_set==False) ):
 #           print "For ligand mapping need to select -alignment or -mcs"
 #           sys.exit(1)
         if( len(findInPythonpath("atoms_to_morph.py"))==0 ):
-            print "Place atoms_to_morph.py in the PYTHONPATH"
+            print("Place atoms_to_morph.py in the PYTHONPATH")
             sys.exit(1)
         callString = "python "+findInPythonpath("atoms_to_morph.py")
         if cmdl.opt['-alignment'].is_set:
@@ -523,7 +523,7 @@ def main(argv):
         else:
             nodeNames = getNodeNames(rmsdMat)
     else:
-        print "Need to provide either an RMSD matrix or a set of ligand pdbs."
+        print("Need to provide either an RMSD matrix or a set of ligand pdbs.")
         sys.exit(0)
 
     # mst or one reference ligand
@@ -534,7 +534,7 @@ def main(argv):
     edgeListMain = []
     edgeListExtra = []
     if bMST: # mst
-        for mst in xrange(0,cycleNum+1):
+        for mst in range(0,cycleNum+1):
             edges = mstPrim(mat)
             mat = modifyMat(edges,mat)
             edgeList.extend(edges)
@@ -544,14 +544,14 @@ def main(argv):
                 edgeListExtra.extend(edges)
     else: # reference
         refLig = identifyRefLig(mat,cmdl.opt['-refName'],nodeNames)
-        for cycle in xrange(0,cycleNum+1):
+        for cycle in range(0,cycleNum+1):
             edges = edgesRefLig(refLig,nodeNames,mat,cycle)
             edgeList.extend(edges)
             if cycle==0:
                 edgeListMain.extend(edges)
             else:
                 edgeListExtra.extend(edges)
-        print "Using reference ligand: ",refLig
+        print("Using reference ligand: ",refLig)
 
     # output nodes
     nodeDeg = getNodeDegrees(nodeNames,edgeList)

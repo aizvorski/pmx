@@ -37,7 +37,7 @@ new_chain = c.copy()
 for i in range(5):
     c.fuse( new_chain.copy() )
 c.write("rep_pep.pdb")
-print c.sequence()
+print(c.sequence())
 helical_residues = c.fetch_residues(["HIS","GLU","ALA","THR","LEU"])
 for resi in helical_residues:
     resi.set_phi( -57, True )

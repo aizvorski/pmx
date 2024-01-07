@@ -41,7 +41,7 @@ Usage:
 
 """
 from numpy import *
-from atom import Atom
+from .atom import Atom
 import _pmx as _p
 
 class Rotation2:
@@ -165,7 +165,7 @@ def bb_super(mol1,mol2, use_orig_mc_coords = True):
             atoms2 = mol2.fetchm(gly_atom_set)
         else:
             atoms2 = mol2.fetchm(atom_set)
-        assert len(atoms1) == len(atoms2), "%s -> %s" % ( '-'.join( map(lambda a: a.name, atoms1)),'-'.join( map(lambda a: a.name, atoms2)) )
+        assert len(atoms1) == len(atoms2), "%s -> %s" % ( '-'.join( [a.name for a in atoms1]),'-'.join( [a.name for a in atoms2]) )
         for atom1, atom2 in zip(atoms1, atoms2):
             atom2.x = atom1.x
 
@@ -238,14 +238,14 @@ def nuc_super(mol1,mol2,name1=None,name2=None):
 
 def planarity(atom_list):
 
-    coords = map(lambda a: a.x, atom_list)
+    coords = [a.x for a in atom_list]
     plan = _p.planarity(coords)
     return plan
 
 def apply_fit_R( atoms, R):
 
     for atom in atoms:
-        x_old = map(lambda x: x, atom.x)
+        x_old = [x for x in atom.x]
         for r in range(3):
             atom.x[r] = 0
             for c in range(3):
@@ -264,14 +264,14 @@ def fit(model1, model2, atom_names = []):
     if atom_names:
         subset1 = model1.fetch_atoms( atom_names )
         subset2 = model2.fetch_atoms( atom_names )
-        cs1 = map(lambda a: a.x, subset1)
-        cs2 = map(lambda a: a.x, subset2)
+        cs1 = [a.x for a in subset1]
+        cs2 = [a.x for a in subset2]
     else:
         cs1 = model1.coords()
         cs2 = model2.coords()
 
     assert( len(cs1) == len(cs2) )
-    m = map(lambda x: 1., cs1) # dummy array
+    m = [1. for x in cs1] # dummy array
     v = _p.center_vec( cs1 )
     v2 = _p.center_vec( cs2 )
     R = _p.calc_fit_R(cs1, cs2, m)
@@ -281,11 +281,11 @@ def fit(model1, model2, atom_names = []):
 
 
 def fit_by_ndx(ref, model, ndx1, ndx2):
-    crd1 = map(lambda i: ref.atoms[i-1].x, ndx1)
-    crd2 = map(lambda i: model.atoms[i-1].x, ndx2)
+    crd1 = [ref.atoms[i-1].x for i in ndx1]
+    crd2 = [model.atoms[i-1].x for i in ndx2]
 
     assert( len(crd1) == len(crd2) )
-    m = map(lambda x: 1., crd1) # dummy array
+    m = [1. for x in crd1] # dummy array
     v = _p.center_vec( crd1 )
     v2 = _p.center_vec( crd2 )
     R = _p.calc_fit_R(crd1, crd2, m)
@@ -294,18 +294,18 @@ def fit_by_ndx(ref, model, ndx1, ndx2):
     model.translate( v )
 
 def translate_by_ndx(struct, ndx):
-    crd = map(lambda i: struct.atoms[i-1].x, ndx)
-    m = map(lambda x: 1., crd)
+    crd = [struct.atoms[i-1].x for i in ndx]
+    m = [1. for x in crd]
     v = _p.center_vec( crd )
     struct.translate( [-v[0], -v[1], -v[2]] )
     return(v)
 
 def fit_atoms( fit_atoms1, fit_atoms2, rot_atoms2 ):
 
-    cs1 = map(lambda a: a.x, fit_atoms1)
-    cs2 = map(lambda a: a.x, fit_atoms2)
+    cs1 = [a.x for a in fit_atoms1]
+    cs2 = [a.x for a in fit_atoms2]
     assert len(cs1) == len(cs2)
-    m = map(lambda x: 1., cs1) # dummy array
+    m = [1. for x in cs1] # dummy array
     v = _p.center_vec( cs1 )
     v2 = _p.center_vec( cs2 )
     R = _p.calc_fit_R(cs1, cs2, m)

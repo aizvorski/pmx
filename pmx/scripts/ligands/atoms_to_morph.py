@@ -107,9 +107,9 @@ def localEnvironment(mol,i,n):
 
 def checkChiral(mol1,mol2,n1,n2):
     # create constraint for alignment
-    constrMap = zip(n1,n2)
+    constrMap = list(zip(n1,n2))
     # align on the subset n1,n2
-    Chem.rdMolAlign.AlignMol(mol2,mol1,atomMap=zip(n2,n1))
+    Chem.rdMolAlign.AlignMol(mol2,mol1,atomMap=list(zip(n2,n1)))
     bonds1 = mol1.GetBonds()
     bonds2 = mol2.GetBonds()
     # create two dictionaries for mappings [n1] = n2
@@ -134,7 +134,7 @@ def checkChiral(mol1,mol2,n1,n2):
             localEnv1 = localEnvironment(mol1,i1,n1)
             if len(localEnv1)>2:
                 localEnv2 = getMappedList(n1,n2,localEnv1)
-                Chem.rdMolAlign.AlignMol(mol2,mol1,atomMap=zip(localEnv2,localEnv1))
+                Chem.rdMolAlign.AlignMol(mol2,mol1,atomMap=list(zip(localEnv2,localEnv1)))
 #               alignOnSubset(mol1,mol2,zip(localEnv1,localEnv2))
             # get the neighbours
             nb1 = a1.GetNeighbors()
@@ -146,7 +146,7 @@ def checkChiral(mol1,mol2,n1,n2):
             localEnv2 = localEnvironment(mol2,i2,n2)
             if len(localEnv2)>2:
                 localEnv1 = getMappedList(n2,n1,localEnv2)
-                Chem.rdMolAlign.AlignMol(mol1,mol2,atomMap=zip(localEnv1,localEnv2))
+                Chem.rdMolAlign.AlignMol(mol1,mol2,atomMap=list(zip(localEnv1,localEnv2)))
 #                alignOnSubset(mol1,mol2,zip(localEnv1,localEnv2))
             # get the neighbours
             nb2 = a2.GetNeighbors()
@@ -170,9 +170,9 @@ def bCheckChiralViolation(mol1,mol2,n1,n2):
     if len(n1)<2 and len(n2)<2:
         return(bViolation)
     # create constraint for alignment
-    constrMap = zip(n1,n2)
+    constrMap = list(zip(n1,n2))
     # align on the subset n1,n2
-    Chem.rdMolAlign.AlignMol(mol2,mol1,atomMap=zip(n2,n1))
+    Chem.rdMolAlign.AlignMol(mol2,mol1,atomMap=list(zip(n2,n1)))
     rem1 = []
     rem2 = []
     bonds1 = mol1.GetBonds()
@@ -200,7 +200,7 @@ def bCheckChiralViolation(mol1,mol2,n1,n2):
             localEnv1 = localEnvironment(mol1,i1,n1)
             if len(localEnv1)>2:
                 localEnv2 = getMappedList(n1,n2,localEnv1)
-                Chem.rdMolAlign.AlignMol(mol2,mol1,atomMap=zip(localEnv2,localEnv1))
+                Chem.rdMolAlign.AlignMol(mol2,mol1,atomMap=list(zip(localEnv2,localEnv1)))
                 #alignOnSubset(mol1,mol2,zip(localEnv1,localEnv2))
             nb1 = a1.GetNeighbors()
             checkNeighDist(mol1,mol2,nb1,n1,n2,rem1,rem2)
@@ -209,7 +209,7 @@ def bCheckChiralViolation(mol1,mol2,n1,n2):
             localEnv2 = localEnvironment(mol2,i2,n2)
             if len(localEnv2)>2:
                 localEnv1 = getMappedList(n2,n1,localEnv2)
-                Chem.rdMolAlign.AlignMol(mol1,mol2,atomMap=zip(localEnv1,localEnv2))
+                Chem.rdMolAlign.AlignMol(mol1,mol2,atomMap=list(zip(localEnv1,localEnv2)))
                 #alignOnSubset(mol1,mol2,zip(localEnv1,localEnv2))
             nb2 = a2.GetNeighbors()
             checkNeighDist(mol2,mol1,nb2,n2,n1,rem2,rem1)
@@ -326,7 +326,7 @@ def getList12(mol,n):
                 continue
             if iEnd2 == iStart1:
                 continue
-            if iStart1 in dict12.keys():
+            if iStart1 in list(dict12.keys()):
                 if iEnd2 not in dict12[iStart1]:
                     dict12[iStart1].append(iEnd2)
             else:
@@ -353,7 +353,7 @@ def getList13(mol,n):
                     continue
                 if (iEnd3==iStart1) or (iEnd3==i2):
                     continue
-                if iStart1 in dict13.keys():
+                if iStart1 in list(dict13.keys()):
                     if iEnd3 not in dict13[iStart1]:
                         dict13[iStart1].append(iEnd3)
                 else:
@@ -387,7 +387,7 @@ def getList14(mol,n):
                         continue
                     if (iEnd4==iStart1) or (iEnd4==i2) or (iEnd4==i3):
                         continue
-                    if iStart1 in dict14.keys():
+                    if iStart1 in list(dict14.keys()):
                         if iEnd4 not in dict14[iStart1]:
                             dict14[iStart1].append(iEnd4)
                     else:
@@ -397,21 +397,21 @@ def getList14(mol,n):
 def findProblemsExclusions(n1,n2,dict_mol1,dict_mol2):
     rem_start = []
     rem_end = []
-    for iStart in dict_mol1.keys():
+    for iStart in list(dict_mol1.keys()):
         for iEnd in dict_mol1[iStart]:
             jStart,jEnd = getAttr(n1,n2,iStart,iEnd)
             if( (jStart==None) or (jEnd==None) ): # mapped to a dummy, thus no worries
                 continue
-            if jStart in dict_mol2.keys():
+            if jStart in list(dict_mol2.keys()):
                 if jEnd not in dict_mol2[jStart]:
                     # maybe entry already exists
                     if ((jStart in rem_start) or (jStart in rem_end)) and ((jEnd in rem_start) or (jEnd in rem_end)):
                         continue
                     rem_start.append(jStart)
                     rem_end.append(jEnd)
-            elif jEnd not in dict_mol2.keys():
+            elif jEnd not in list(dict_mol2.keys()):
                 # a weird situation that shouldn't happen
-                print "Warning: something wrong in the 1-2, 1-3 or 1-4 lists. Trying to proceed with the warning..."
+                print("Warning: something wrong in the 1-2, 1-3 or 1-4 lists. Trying to proceed with the warning...")
                 rem_start.append(jStart)
                 rem_end.append(jEnd)
     return(rem_start,rem_end)
@@ -569,18 +569,18 @@ def writeFormatPDB(fname,m,title="",nr=1):
         # chlorine
         if( 'CL' in atom.name or 'Cl' in atom.name or 'cl' in atom.name ):
             foo.name = "Cl"#+"  "
-            print >>fp, foo
+            print(foo, file=fp)
         # bromine
         elif( 'BR' in atom.name or 'Br' in atom.name or 'br' in atom.name ):
             foo.name = "Br"#+"  "
-            print >>fp, foo
+            print(foo, file=fp)
         elif( len(atom.name) >= 4): # too long atom name
             foo = cp.deepcopy(atom)
             foo.name = foo.name[:3]
-            print >>fp, foo
+            print(foo, file=fp)
         else:
-            print >>fp, atom
-    print >>fp, 'ENDMDL'
+            print(atom, file=fp)
+    print('ENDMDL', file=fp)
     fp.close()
 #    sys.exit(0)
 
@@ -746,7 +746,7 @@ def o3a_alignment(mol1, mol2, bH2H, bH2Hpolar, bH2heavy, bRingsOnly, sigmaHoleID
 # do not break rings
     bBreakRings = False
     if( bBreakRings==False ):
-        print "Avoiding breaking rings.\n"
+        print("Avoiding breaking rings.\n")
         n1,n2 = matchFullRings(mol1,mol2,n1,n2)
 #    sys.exit(0)
 # treat disconnected
@@ -1036,7 +1036,7 @@ def disconnectedMCS(mol1,mol2,ind1,ind2,bH2H=True,bH2Hpolar=True,bH2heavy=True):
         pp.Init(res.smarts)
     except:
         if len(ind1)>1:
-            print "WARNING: the mapping may (but not necessarily) contain disconnected fragments. Proceed with caution."
+            print("WARNING: the mapping may (but not necessarily) contain disconnected fragments. Proceed with caution.")
         return(ind1,ind2)
 #       return(n1_orig,n2_orig)
     n1_list = pp.GetMatches(subMol1)
@@ -1111,7 +1111,7 @@ def disconnectedRecursive(mol1,mol2,ind1,ind2):
                 key2 =  str(i)
                 break
         key = key1+'_'+key2
-        if key in matchDict1.keys():
+        if key in list(matchDict1.keys()):
             matchDict1[key].append(id1)
             matchDict2[key].append(id2)
         else:
@@ -1126,9 +1126,9 @@ def disconnectedRecursive(mol1,mol2,ind1,ind2):
         if len(matchDict1[key]) > maxMatchSize:
             maxMatchSize = len(matchDict1[key])
             maxMatchKey = key
-            minMatchRMSD = Chem.rdMolAlign.AlignMol(mol2,mol1,atomMap=zip(matchDict2[key],matchDict1[key]))
+            minMatchRMSD = Chem.rdMolAlign.AlignMol(mol2,mol1,atomMap=list(zip(matchDict2[key],matchDict1[key])))
         elif len(matchDict1[key]) == maxMatchSize:
-            rmsd = Chem.rdMolAlign.AlignMol(mol2,mol1,atomMap=zip(matchDict2[key],matchDict1[key]))
+            rmsd = Chem.rdMolAlign.AlignMol(mol2,mol1,atomMap=list(zip(matchDict2[key],matchDict1[key])))
             if rmsd < minMatchRMSD:
                 minMatchRMSD = rmsd
                 maxMatchKey = key
@@ -1228,10 +1228,10 @@ def mcsDist(mol1,mol2,n1_list,n2_list,d,bH2H,bH2heavy):
     # distances
     maxMCS = 0 # size of the largest MCS fulfilling the distances
     for nfoo,nbar in zip(n1_list,n2_list):
-        alignID = zip(nfoo,nbar)
+        alignID = list(zip(nfoo,nbar))
 ##########################################
 ###### o3a alignment may work better #####
-        rmsd = Chem.rdMolAlign.AlignMol(mol2,mol1,atomMap=zip(nbar,nfoo))
+        rmsd = Chem.rdMolAlign.AlignMol(mol2,mol1,atomMap=list(zip(nbar,nfoo)))
 #       rmsd = alignOnSubset(mol1,mol2,alignID) # but it has some dependence on the molecule sequence, not sure if I trust it
 #        print "RMSD after alignment: %f Angstroms" %rmsd
         x,y = distance_based(mol1,mol2,d,nfoo,nbar)
@@ -1255,7 +1255,7 @@ def mcsDist(mol1,mol2,n1_list,n2_list,d,bH2H,bH2heavy):
         if(len(x)>maxMCS):
             maxMCS = len(x)
 
-    print "maxMCS after distance treatment: %d" % maxMCS
+    print("maxMCS after distance treatment: %d" % maxMCS)
 
     n1 = []
     n2 = []
@@ -1288,7 +1288,7 @@ def selectOneMCS(n1_list,n2_list,mol1,mol2):
     rmsdMin = 9999.999
     for nfoo,nbar in zip(n1_largest,n2_largest):
         # align
-        alignID = zip(nbar,nfoo)
+        alignID = list(zip(nbar,nfoo))
         try:
             rmsd = Chem.rdMolAlign.AlignMol(mol2,mol1,atomMap=alignID)
         except:
@@ -1530,7 +1530,7 @@ def mcs(mol1, mol2, molForMcs1,molForMcs2, bH2H, bH2Hpolar, bH2heavy, bdMCS, bRi
         carbonize(foo,bH2heavy)
         carbonize(bar,bH2heavy)
     mols = [foo,bar]
-    print "Searching..."
+    print("Searching...")
     res = MCS.FindMCS(mols,ringMatchesRingOnly=True, completeRingsOnly=True, atomCompare='elements', bondCompare='any', timeout=int(t), maximize='bonds')
     # for new RDKit-2018 use below
 #    res = rdFMCS.FindMCS(mols,ringMatchesRingOnly=True, completeRingsOnly=True, timeout=int(t), maximizeBonds=True, bondCompare=rdFMCS.BondCompare.CompareAny, atomCompare=rdFMCS.AtomCompare.CompareElements)
@@ -1544,7 +1544,7 @@ def mcs(mol1, mol2, molForMcs1,molForMcs2, bH2H, bH2Hpolar, bH2heavy, bdMCS, bRi
         return(n1_list,n2_list)
     n1_list = pp.GetMatches(foo)
     n2_list = pp.GetMatches(bar)
-    print 'Found %d MCSs in total (mol1: %d, mol2: %d), each with %d atoms and %d bonds' % (len(n1_list)*len(n2_list),len(n1_list),len(n2_list),res.numAtoms,res.numBonds)
+    print('Found %d MCSs in total (mol1: %d, mol2: %d), each with %d atoms and %d bonds' % (len(n1_list)*len(n2_list),len(n1_list),len(n2_list),res.numAtoms,res.numBonds))
     # if hydrogens to be removed
     n1_list,n2_list = mcsHremove(mol1,mol2,n1_list,n2_list,bH2H,bH2Hpolar,bH2heavy)
     # from this point n1_list and n2_list elements must match 1to1, i.e. the number of elements in the lists is the same
@@ -1577,7 +1577,7 @@ def mcs(mol1, mol2, molForMcs1,molForMcs2, bH2H, bH2Hpolar, bH2heavy, bdMCS, bRi
 ######### chirality check ###################
 #    bChiral = True#False#True
     if( bChiral==True ):
-        print "Chirality check."
+        print("Chirality check.")
         n1_foo = []
         n2_foo = []
         for n1,n2 in zip(n1_list,n2_list):
@@ -1605,7 +1605,7 @@ def mcs(mol1, mol2, molForMcs1,molForMcs2, bH2H, bH2Hpolar, bH2heavy, bdMCS, bRi
 ######### do not break rings ################
     bBreakRings = False
     if( bBreakRings==False ):
-        print "Avoiding breaking rings."
+        print("Avoiding breaking rings.")
         n1_foo = []
         n2_foo = []
         for n1,n2 in zip(n1_list,n2_list):
@@ -1632,7 +1632,7 @@ def mcs(mol1, mol2, molForMcs1,molForMcs2, bH2H, bH2Hpolar, bH2heavy, bdMCS, bRi
         # and disconnected fragments may appear
         bBreakRings = False
         if( bBreakRings==False ):
-            print "Avoiding breaking rings after meeting distance criterium.\n"
+            print("Avoiding breaking rings after meeting distance criterium.\n")
             n1_foo = []
             n2_foo = []
             for n1,n2 in zip(n1_list,n2_list):
@@ -1652,7 +1652,7 @@ def mcs(mol1, mol2, molForMcs1,molForMcs2, bH2H, bH2Hpolar, bH2heavy, bdMCS, bRi
     # remove sigma hole virtual particles
     n1,n2 = remove_sigmaHoles( n1,n2,sigmaHoleID1,sigmaHoleID2)
 
-    print 'Final MCS that survived after pruning: %d atoms' % (len(n1))
+    print('Final MCS that survived after pruning: %d atoms' % (len(n1)))
 
     return n1,n2
 
@@ -1752,12 +1752,12 @@ def main(argv):
             if cmdl.opt['-alignment'].is_set==False:
                 bAlignment = False
     if bMCS==False and bAlignment==False:
-        print "No method (alignment, mcs) was selected."
+        print("No method (alignment, mcs) was selected.")
         sys.exit(0)
-    print "Morphable atoms will be identified using the following methods:"
-    print "Alignment: ",bAlignment
-    print "MCS: ",bMCS
-    print "\n"
+    print("Morphable atoms will be identified using the following methods:")
+    print("Alignment: ",bAlignment)
+    print("MCS: ",bMCS)
+    print("\n")
 ######################################
 
     # read index
@@ -1797,7 +1797,7 @@ def main(argv):
         rdmolops.AssignStereochemistry(mol1)
         rdmolops.AssignStereochemistry(mol2)
     except:
-        print "Chirality not assigned"
+        print("Chirality not assigned")
 
 #    mol1 = Chem.SDMolSupplier(cmdl['-i1'],removeHs=False,sanitize=True)
 #    mol2 = Chem.SDMolSupplier(cmdl['-i2'],removeHs=False,sanitize=True)
@@ -1813,7 +1813,7 @@ def main(argv):
         if( bYesRings==True ):
             bRingsOnly=True
         else:
-            print "-RingsOnly flag is unset, because one (or both) molecule has no rings\n"
+            print("-RingsOnly flag is unset, because one (or both) molecule has no rings\n")
 
     n1 = []
     n2 = []
@@ -1833,25 +1833,25 @@ def main(argv):
     n1mcs = []
     n2mcs = []
     if(bMCS==True):
-        print "The topology matching approach will be used (MCS)"
-        print "fmcs module: Copyright (c) 2012 Andrew Dalke Scientific AB\n"
+        print("The topology matching approach will be used (MCS)")
+        print("fmcs module: Copyright (c) 2012 Andrew Dalke Scientific AB\n")
         if(bRingsOnly==True):
             n1mcs,n2mcs = mcs(mol1,mol2,molForMcs1,molForMcs2,bH2H,bH2Hpolar,bH2heavy,cmdl['-dMCS'],bRingsOnly,d,bChiral,sigmaHoleID1,sigmaHoleID2,timeout)
         else:
-            print "Trying to run an MCS using all atoms..."
+            print("Trying to run an MCS using all atoms...")
             n1A,n2A = mcs(mol1,mol2,molForMcs1,molForMcs2,bH2H,bH2Hpolar,bH2heavy,cmdl['-dMCS'],False,d,bChiral,sigmaHoleID1,sigmaHoleID2,timeout)
             n1mcs = n1A
             n2mcs = n2A
-            print "Size of mapping: ",len(n1mcs)
+            print("Size of mapping: ",len(n1mcs))
             if( bYesRings==True ):
-                print "Trying to run an MCS using rings only..."
+                print("Trying to run an MCS using rings only...")
                 n1B,n2B = mcs(mol1,mol2,molForMcs1,molForMcs2,bH2H,bH2Hpolar,bH2heavy,cmdl['-dMCS'],True,d,bChiral,sigmaHoleID1,sigmaHoleID2,timeout)
                 if(len(n1A)<=len(n1B)):
-                    print "Using ring only MCS result."
+                    print("Using ring only MCS result.")
                     n1mcs = n1B
                     n2mcs = n2B
                 else:
-                    print "Using all atom MCS result."
+                    print("Using all atom MCS result.")
         if len(n1mcs)==0:
             bMCSfailed = True
 ########################################
@@ -1860,37 +1860,37 @@ def main(argv):
     n2align = []
     if( (bAlignment==True) or (bMCSfailed==True) ):
         if bMCSfailed==True:
-            print "The MCS approach did not find any mapping"
-        print "\nThe alignment approach will be used"
-        print "Tosco, P., Balle, T. & Shiri, F. Open3DALIGN: an open-source software aimed at unsupervised ligand alignment. J Comput Aided Mol Des 25:777-83 (2011)"
-        print "Alignment is based on atom logP contributions: S. A. Wildman and G. M. Crippen JCICS _39_ 868-873 (1999)\n"
+            print("The MCS approach did not find any mapping")
+        print("\nThe alignment approach will be used")
+        print("Tosco, P., Balle, T. & Shiri, F. Open3DALIGN: an open-source software aimed at unsupervised ligand alignment. J Comput Aided Mol Des 25:777-83 (2011)")
+        print("Alignment is based on atom logP contributions: S. A. Wildman and G. M. Crippen JCICS _39_ 868-873 (1999)\n")
         # only use rings
         if(bRingsOnly==True):
             n1align,n2align,pyO3A = o3a_alignment(mol1,mol2,bH2H,bH2Hpolar,bH2heavy,bRingsOnly,sigmaHoleID1,sigmaHoleID2,True,d)
         # else try both options and choose better
         else:
-            print "Trying to align all atoms..."
+            print("Trying to align all atoms...")
             n1align,n2align,pyO3A = o3a_alignment(mol1,mol2,bH2H,bH2Hpolar,bH2heavy,False,sigmaHoleID1,sigmaHoleID2,True,d)
-            print "Size of mapping: ",len(n1align)
+            print("Size of mapping: ",len(n1align))
             if( bYesRings==True ):
-                print "Trying to align rings only..."
+                print("Trying to align rings only...")
                 mol1 = cp.deepcopy(molcp1)
                 mol2 = cp.deepcopy(molcp2)
                 n1B,n2B,pyO3A = o3a_alignment(mol1,mol2,bH2H,bH2Hpolar,bH2heavy,True,sigmaHoleID1,sigmaHoleID2,True,d)
-                print "Size of mapping: ",len(n1B)
+                print("Size of mapping: ",len(n1B))
                 if(len(n1align)<=len(n1B)):
-                    print "Using ring only alignment result."
+                    print("Using ring only alignment result.")
                     n1align = n1B
                     n2align = n2B
                 else:
-                    print "Using all atom alignment result."
+                    print("Using all atom alignment result.")
     # select the better result: mcs or align
     if len(n1align)>=len(n1mcs):
-        print "The final result is based on the O3A alignment."
+        print("The final result is based on the O3A alignment.")
         n1 = n1align
         n2 = n2align
     else:
-        print "The final result is based on the MCS."
+        print("The final result is based on the MCS.")
         n1 = n1mcs
         n2 = n2mcs
 #-------------------------------------------------------------------------------#
@@ -1898,14 +1898,14 @@ def main(argv):
 # also try the same procedure by inverting the ordering of mol1 and mol2 #
 ###########################################
 ########### mcs ###########################
-    print "\n********************************************************************************************************************************"
-    print "To ensure that the mapping is symmetric, i.e. mol1->mol2=mol2->mol1, we repeat the same procedure by swapping the molecule order.\n"
-    print "********************************************************************************************************************************"
+    print("\n********************************************************************************************************************************")
+    print("To ensure that the mapping is symmetric, i.e. mol1->mol2=mol2->mol1, we repeat the same procedure by swapping the molecule order.\n")
+    print("********************************************************************************************************************************")
     bMCSfailed = False
     n1mcs = []
     n2mcs = []
     if(bMCS==True):
-        print "Running MCS:"
+        print("Running MCS:")
         if(bRingsOnly==True):
             n2mcs,n1mcs = mcs(mol2,mol1,molForMcs2,molForMcs1,bH2H,bH2Hpolar,bH2heavy,cmdl['-dMCS'],bRingsOnly,d,bChiral,sigmaHoleID2,sigmaHoleID1,timeout)
         else:
@@ -1924,54 +1924,54 @@ def main(argv):
     n1align = []
     n2align = []
     if( (bAlignment==True) or (bMCSfailed==True) ):
-        print "\nRunning alignment:"
+        print("\nRunning alignment:")
         if(bRingsOnly==True):
             n2align,n1align,pyO3A = o3a_alignment(mol2,mol1,bH2H,bH2Hpolar,bH2heavy,bRingsOnly,sigmaHoleID2,sigmaHoleID1,True,d)
         else:
             n2align,n1align,pyO3A = o3a_alignment(mol2,mol1,bH2H,bH2Hpolar,bH2heavy,False,sigmaHoleID2,sigmaHoleID1,True,d)
-            print "Size of mapping: ",len(n1align)
+            print("Size of mapping: ",len(n1align))
             if( bYesRings==True ):
                 mol1 = cp.deepcopy(molcp1)
                 mol2 = cp.deepcopy(molcp2)
                 n2B,n1B,pyO3A = o3a_alignment(mol2,mol1,bH2H,bH2Hpolar,bH2heavy,True,sigmaHoleID2,sigmaHoleID1,True,d)
-                print "Size of mapping: ",len(n1B)
+                print("Size of mapping: ",len(n1B))
                 if(len(n1align)<=len(n1B)):
                     n1align = n1B
                     n2align = n2B
     # select the better result (mcs or align) and compare with the non-inverted mapping
     if (len(n1align)<=len(n1)) and (len(n1mcs)<=len(n1)):
-        print "Swapping of the molecules did not yield a better atom mapping."
+        print("Swapping of the molecules did not yield a better atom mapping.")
     if (len(n1align)>=len(n1mcs)) and (len(n1align)>len(n1)):
-        print "The final result is based on the O3A alignment after swapping the molecule order (mol2-mol1)."
+        print("The final result is based on the O3A alignment after swapping the molecule order (mol2-mol1).")
         n1 = n1align
         n2 = n2align
     elif (len(n1align)<len(n1mcs)) and (len(n1mcs)>len(n1)):
-        print "The final result is based on the MCS after swapping the molecule order (mol2-mol1)."
+        print("The final result is based on the MCS after swapping the molecule order (mol2-mol1).")
         n1 = n1mcs
         n2 = n2mcs
-    print "\n"
+    print("\n")
 #*******************************************************************************#
 #*******************************************************************************#
 #*******************************************************************************#
 
     # a check
     if( len(n1) != len(n2) ):
-        print "Warning: something went wrong."
-        print "Number of the morphable atoms in the ligands does not match.\n"
+        print("Warning: something went wrong.")
+        print("Number of the morphable atoms in the ligands does not match.\n")
 
     # calculate score
     score = calcScore(mol1,mol2,n1,n2,bH2H,bH2heavy)
 
     # print some output
-    print "FINAL RESULTS"
+    print("FINAL RESULTS")
     if( bH2H==True or bH2heavy==True ):
-        print "Atoms considered in mol1: ",mol1.GetNumAtoms()
-        print "Atoms considered in mol2: ",mol2.GetNumAtoms()
+        print("Atoms considered in mol1: ",mol1.GetNumAtoms())
+        print("Atoms considered in mol2: ",mol2.GetNumAtoms())
     else:
-        print "Atoms considered in mol1: ",mol1.GetNumHeavyAtoms()
-        print "Atoms considered in mol2: ",mol2.GetNumHeavyAtoms()
-    print "Morphable atoms in both molecules: ",len(n1),len(n2)
-    print "Dissimilarity (distance) score: %.4f\n" % score
+        print("Atoms considered in mol1: ",mol1.GetNumHeavyAtoms())
+        print("Atoms considered in mol2: ",mol2.GetNumHeavyAtoms())
+    print("Morphable atoms in both molecules: ",len(n1),len(n2))
+    print("Dissimilarity (distance) score: %.4f\n" % score)
     if(cmdl['-score']):
         fp = open(cmdl['-score'],'w')
         fp.write("Score: %.4f\n" % score)
@@ -1988,9 +1988,9 @@ def main(argv):
 #       if( cmdl['-mcs']==True ):
         try:
 #            Chem.rdMolAlign.AlignMol(mol2,mol1,atomMap=zip(n2,n1))
-            Chem.rdMolAlign.AlignMol(mol2,molcp1,atomMap=zip(n2,n1))
+            Chem.rdMolAlign.AlignMol(mol2,molcp1,atomMap=list(zip(n2,n1)))
         except:
-            print "Cannot superimpose -opdb2 structure. Maybe no morphable atoms have been found\n"
+            print("Cannot superimpose -opdb2 structure. Maybe no morphable atoms have been found\n")
         Chem.MolToPDBFile(mol2,cmdl['-opdb2'])
     if cmdl.opt['-opdbm1'].is_set:
         mol = subMolByIndex(molcp1,n1)

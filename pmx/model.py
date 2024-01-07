@@ -68,12 +68,12 @@ Basic Usage:
     remove chain A
     >>> model.write(args['-o']) write new structure file
     """
-from atomselection import *
+from .atomselection import *
 import sys,copy,library
 #from chain import *
-import chain
-from molecule import *
-from atom import *
+from . import chain
+from .molecule import *
+from .atom import *
 import _pmx as _p
 XX       =  0
 YY       =  1
@@ -96,7 +96,7 @@ class Model(Atomselection):
         self.have_bonds=0
         self.box = [ [0,0,0], [0,0,0], [0,0,0] ]
         self.unity = 'A'
-        for key, val in kwargs.items():
+        for key, val in list(kwargs.items()):
             setattr(self,key,val)
 
         if filename is not None:
@@ -117,7 +117,7 @@ class Model(Atomselection):
             self.make_chains()
             self.make_residues()
         if self.chdic and not self.chains:
-            for key, val in self.chdic.items():
+            for key, val in list(self.chdic.items()):
                 self.chains.append(val)
             if not self.atoms and not self.residues:
                 self.resl_from_chains()
@@ -153,23 +153,23 @@ class Model(Atomselection):
     def writePIR( self, filename, title=""):
         fp = open(filename,"w")
         if not title: title = '_'.join(self.title.split())
-        print >>fp, '>P1;%s' % title
-        print >>fp, 'sequence:::::::::'
+        print('>P1;%s' % title, file=fp)
+        print('sequence:::::::::', file=fp)
         for i in range( len(self.chains) - 1):
-            print >>fp, self.chains[i].get_sequence()+'/'
-        print >>fp, self.chains[-1].get_sequence()+'*'
+            print(self.chains[i].get_sequence()+'/', file=fp)
+        print(self.chains[-1].get_sequence()+'*', file=fp)
         fp.close()
 
     def writeFASTA( self, filename, title = ""):
         fp = open(filename,"w")
         if not title: title = '_'.join(self.title.split())
         if len(self.chains) == 1:
-            print >>fp, '> %s' % title
-            print >>fp, self.chains[0].get_sequence()
+            print('> %s' % title, file=fp)
+            print(self.chains[0].get_sequence(), file=fp)
         else:
             for chain in self.chains:
-                print >>fp, '> %s_chain_%s' % (title, chain.id )
-                print >>fp, chain.get_sequence()
+                print('> %s_chain_%s' % (title, chain.id ), file=fp)
+                print(chain.get_sequence(), file=fp)
 
 
 
@@ -225,7 +225,7 @@ class Model(Atomselection):
         elif ext == 'fasta':
             self.writeFASTA( fn, title )
         else:
-            print >>sys.stderr, 'pmx_Error_> Can only write pdb or gro!'
+            print('pmx_Error_> Can only write pdb or gro!', file=sys.stderr)
             sys.exit(1)
 
 
@@ -412,7 +412,7 @@ class Model(Atomselection):
             # chain with a new ID
             if 'pmx' in a.chain_id:
                 # this ID has already been encountered
-                if a.chain_id in newChainDict.keys():
+                if a.chain_id in list(newChainDict.keys()):
                     a.chain_id = newChainDict[a.chain_id]
                 # ID not yet encountered
                 else:
@@ -502,7 +502,7 @@ class Model(Atomselection):
         elif ext == 'gro':
             return self.__readGRO( filename )
         else:
-            print >>sys.stderr, 'ERROR: Can only read pdb or gro!'
+            print('ERROR: Can only read pdb or gro!', file=sys.stderr)
             sys.exit(1)
 
     def renumber_residues(self):
@@ -520,9 +520,9 @@ class Model(Atomselection):
         ch.remove_residue(residue)
 
     def remove_chain(self,key):
-        if not self.chdic.has_key(key):
-            print 'No chain %s to remove....' % key
-            print 'No changes applied.'
+        if key not in self.chdic:
+            print('No chain %s to remove....' % key)
+            print('No changes applied.')
             return
         for ch in self.chains:
             if ch.id == key:
@@ -553,9 +553,9 @@ class Model(Atomselection):
         ch.replace_residue(residue,new,bKeepResNum)
 
     def insert_chain(self,pos,new_chain):
-        if self.chdic.has_key(new_chain.id):
-            print 'Chain identifier %s already in use!' % new_chain.id
-            print 'Changing chain identifier to 0'
+        if new_chain.id in self.chdic:
+            print('Chain identifier %s already in use!' % new_chain.id)
+            print('Changing chain identifier to 0')
             new_chain.set_chain_id('0')
         self.chains.insert(pos,new_chain)
         self.resl_from_chains()
@@ -682,7 +682,7 @@ class Model(Atomselection):
         nter = []
         for ch in model.chains:
             first = ch.residues[0]      # first residue
-            if first.resname in library._one_letter.keys():
+            if first.resname in list(library._one_letter.keys()):
                 nter.append(first)
         return nter
 
@@ -690,7 +690,7 @@ class Model(Atomselection):
         cter = []
         for ch in model.chains:
             last = ch.residues[-1]      # last residue
-            if last.resname in library._one_letter.keys():
+            if last.resname in list(library._one_letter.keys()):
                 cter.append(last)
         return last
 

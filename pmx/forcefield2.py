@@ -34,17 +34,17 @@ __doc__="""
 Functions to read gromacs forcefield files
 """
 import sys,os,re, copy
-from parser import *
-import cpp
-from atom import Atom
-from molecule import Molecule
-from odict import *
-from library import _aliases
-from ffparser import *
+from .parser import *
+from . import cpp
+from .atom import Atom
+from .molecule import Molecule
+from .odict import *
+from .library import _aliases
+from .ffparser import *
 import _pmx as _p
 
 def TR ( s ):
-    print "pmx.forcefield_> " + s
+    print("pmx.forcefield_> " + s)
 
 #def cpp_parse_file(fn,cpp_defs=[],cpp_path=[os.environ.get('GMXDATA')+'/top'] ):
 def cpp_parse_file(fn,cpp_defs=[],cpp_path=[os.environ.get('GMXLIB')], itp=False, ffpath=None ):
@@ -235,7 +235,7 @@ class TopolBase:
                 try:
                     lst = parseList('ssiffsff',l) # opls
                 except:
-                    print 'Could not read atomtype format'
+                    print('Could not read atomtype format')
         if len(lst)>0:
             self.has_atomtypes = True
         self.atomtypes = lst
@@ -585,19 +585,19 @@ class TopolBase:
 
     def write_header(self,fp):
         for line in self.header:
-            print >>fp, line
+            print(line, file=fp)
 
     def write_footer(self,fp):
         try:
             for line in self.footer:
-                print >>fp, line
+                print(line, file=fp)
         except:
-            print "No footer in itp\n"
+            print("No footer in itp\n")
 
     def write_moleculetype(self, fp):
-        print >>fp, '[ moleculetype ]'
-        print >>fp, '; Name        nrexcl'
-        print >>fp, '%s  %d' % (self.name,self.nrexcl)
+        print('[ moleculetype ]', file=fp)
+        print('; Name        nrexcl', file=fp)
+        print('%s  %d' % (self.name,self.nrexcl), file=fp)
 
     def write_atomtypes(self, fp):
         fp.write('[ atomtypes ]\n')
@@ -659,8 +659,8 @@ class TopolBase:
                     else:
                         atom.qqA = atom.q
                         atom.qqB = atom.q
-                qA_tot = sum(map(lambda a: a.qqA, r.atoms))
-                qB_tot = sum(map(lambda a: a.qqB, r.atoms))
+                qA_tot = sum([a.qqA for a in r.atoms])
+                qB_tot = sum([a.qqB for a in r.atoms])
                 if round(qB_tot,5) != round(target_chargeB,5):
                     TR('State B has total charge of %g' % round(qB_tot,5))
                     TR('Applying charge correction to ensure integer charges')
@@ -669,14 +669,14 @@ class TopolBase:
                     newqB = latom.qqB-(qB_tot-target_chargeB)
                     TR('Changing chargeB of atom %s from %g to %g' % (latom.name, latom.qqB,newqB))
                     latom.qqB = newqB
-                    qB_tot = sum(map(lambda a: a.qqB, r.atoms))
+                    qB_tot = sum([a.qqB for a in r.atoms])
                     TR('New total charge of B-state is %g' % round(qB_tot,5))
                 else:
                     TR('No corrections applied to ensure integer charges')
 
 
-        print >>fp,'\n [ atoms ]'
-        print >>fp, ';   nr       type  resnr residue  atom   cgnr     charge       mass  typeB    chargeB      massB'
+        print('\n [ atoms ]', file=fp)
+        print(';   nr       type  resnr residue  atom   cgnr     charge       mass  typeB    chargeB      massB', file=fp)
         al = self.atoms
         for atom in al:
             if self.__atoms_morphe([atom]):
@@ -710,15 +710,15 @@ class TopolBase:
                 else:
                     qqA = atom.q
                     qqB = atom.qB
-                print >>fp , '%6d %11s%7d%7s%7s%7d%11.6f%11.4f %11s%11.6f%11.4f' % \
+                print('%6d %11s%7d%7s%7s%7d%11.6f%11.4f %11s%11.6f%11.4f' % \
                       (atom.id, atA, atom.resnr, atom.resname, atom.name, \
-                       atom.cgnr, qqA, mA, atB, qqB, mB)
+                       atom.cgnr, qqA, mA, atB, qqB, mB), file=fp)
                 self.qA+=qqA
                 self.qB+=qqB
             else:
-                print >>fp , '%6d %11s%7d%7s%7s%7d%11.6f%11.4f' % \
+                print('%6d %11s%7d%7s%7s%7d%11.6f%11.4f' % \
                       (atom.id, atom.atomtype, atom.resnr, atom.resname, atom.name, \
-                       atom.cgnr, atom.q, atom.m)
+                       atom.cgnr, atom.q, atom.m), file=fp)
                 self.qA+=atom.q
                 self.qB+=atom.q
         # write qB of latom to qA
@@ -731,64 +731,64 @@ class TopolBase:
 
     def write_bonds(self,fp, state = 'AB'):
 
-        print >>fp,'\n [ bonds ]'
-        print >>fp, ';  ai    aj funct            c0            c1            c2            c3'
+        print('\n [ bonds ]', file=fp)
+        print(';  ai    aj funct            c0            c1            c2            c3', file=fp)
         for b in self.bonds:
             if len(b) == 3:
-                print >>fp, '%6d %6d %6d' % (b[0].id, b[1].id, b[2])
+                print('%6d %6d %6d' % (b[0].id, b[1].id, b[2]), file=fp)
             elif len(b) == 4:
                 s = '   '+'   '.join([str(x) for x in b[3]])
-                print >>fp, '%6d %6d %6d %s' % (b[0].id, b[1].id, b[2], s)
+                print('%6d %6d %6d %s' % (b[0].id, b[1].id, b[2], s), file=fp)
             else:
                 lA = b[3][1]
                 kA = b[3][2]
                 lB = b[4][1]
                 kB = b[4][2]
                 if state == 'AB':
-                    print >>fp, '%6d %6d %6d %14.6f %14.6f %14.6f %14.6f' % \
-                          (b[0].id, b[1].id, b[2],lA,kA, lB, kB)
+                    print('%6d %6d %6d %14.6f %14.6f %14.6f %14.6f' % \
+                          (b[0].id, b[1].id, b[2],lA,kA, lB, kB), file=fp)
                 elif state == 'AA':
-                    print >>fp, '%6d %6d %6d %14.6f %14.6f %14.6f %14.6f' % \
-                          (b[0].id, b[1].id, b[2],lA, kA, lA, kA)
+                    print('%6d %6d %6d %14.6f %14.6f %14.6f %14.6f' % \
+                          (b[0].id, b[1].id, b[2],lA, kA, lA, kA), file=fp)
                 elif state == 'BB':
-                    print >>fp, '%6d %6d %6d %14.6f %14.6f %14.6f %14.6f' % \
-                          (b[0].id, b[1].id, b[2],lB, kB, lB, kB)
+                    print('%6d %6d %6d %14.6f %14.6f %14.6f %14.6f' % \
+                          (b[0].id, b[1].id, b[2],lB, kB, lB, kB), file=fp)
 
 
     def write_pairs(self, fp):
         # CHECK HOW THIS GOES WITH B-STATES
-        print >>fp,'\n [ pairs ]'
-        print >>fp, ';  ai    aj funct            c0            c1            c2            c3'
+        print('\n [ pairs ]', file=fp)
+        print(';  ai    aj funct            c0            c1            c2            c3', file=fp)
         for p in self.pairs:
-            print >>fp, '%6d %6d %6d' % (p[0].id, p[1].id, p[2])
+            print('%6d %6d %6d' % (p[0].id, p[1].id, p[2]), file=fp)
 
     def write_constraints(self, fp):
         # CHECK HOW THIS GOES WITH B-STATES
-        print >>fp,'\n [ constraints ]'
-        print >>fp, ';  ai    aj funct            c0            c1            c2            c3'
+        print('\n [ constraints ]', file=fp)
+        print(';  ai    aj funct            c0            c1            c2            c3', file=fp)
         for p in self.constraints:
             if(len(p)==3):
-                print >>fp, '%6d %6d %6d' % (p[0].id, p[1].id, p[2])
+                print('%6d %6d %6d' % (p[0].id, p[1].id, p[2]), file=fp)
             else:
-                print >>fp, '%6d %6d %6d %8s' % (p[0].id, p[1].id, p[2], p[3])
+                print('%6d %6d %6d %8s' % (p[0].id, p[1].id, p[2], p[3]), file=fp)
 
     def write_angles(self,fp, state='AB'):
-        print >>fp,'\n [ angles ]'
-        print >>fp, ';  ai    aj    ak funct            c0            c1            c2            c3'
+        print('\n [ angles ]', file=fp)
+        print(';  ai    aj    ak funct            c0            c1            c2            c3', file=fp)
         for ang in self.angles:
             if len(ang) == 4:
-                print >>fp, '%6d %6d %6d %6d' % (ang[0].id, ang[1].id, ang[2].id,ang[3])
+                print('%6d %6d %6d %6d' % (ang[0].id, ang[1].id, ang[2].id,ang[3]), file=fp)
             else:
                 if state == 'A':
                     if ang[3]==1 :
-                        print >>fp, '%6d %6d %6d %6d %14.6f %14.6f' % (ang[0].id, ang[1].id, ang[2].id,ang[3],ang[4][0],ang[4][1])
+                        print('%6d %6d %6d %6d %14.6f %14.6f' % (ang[0].id, ang[1].id, ang[2].id,ang[3],ang[4][0],ang[4][1]), file=fp)
                     elif ang[3]==5 :
                         if shape(ang[4])[0]==4:
-                            print >>fp, '%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f' % (ang[0].id, ang[1].id, ang[2].id,ang[3],ang[4][0],ang[4][1],ang[4][2],ang[4][3])
+                            print('%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f' % (ang[0].id, ang[1].id, ang[2].id,ang[3],ang[4][0],ang[4][1],ang[4][2],ang[4][3]), file=fp)
                         else:
-                            print >>fp, '%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f' % (ang[0].id, ang[1].id, ang[2].id,ang[3],ang[4][1],ang[4][2],ang[4][3],ang[4][4])
+                            print('%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f' % (ang[0].id, ang[1].id, ang[2].id,ang[3],ang[4][1],ang[4][2],ang[4][3],ang[4][4]), file=fp)
                     else :
-                        print "Don't know how to print angletype %d" % ang[3]
+                        print("Don't know how to print angletype %d" % ang[3])
                         exit()
                 if state == 'AB':
 #                   print ang[0].id, ang[1].id, ang[2].id
@@ -798,75 +798,75 @@ class TopolBase:
                     if ang[3]==1 :
                         # two possibilities: angle actually has a B-state or there is A state only
                         if(len(ang)>5): # B-state exists
-                            print >>fp, '%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f ; %s %s %s' % \
+                            print('%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f ; %s %s %s' % \
                               (ang[0].id, ang[1].id, ang[2].id,ang[3], ang[4][1], \
-                               ang[4][2], ang[5][1], ang[5][2], ang[0].name, ang[1].name, ang[2].name)
+                               ang[4][2], ang[5][1], ang[5][2], ang[0].name, ang[1].name, ang[2].name), file=fp)
                         else: # A-state only
-                            print >>fp, '%6d %6d %6d %6d %14.6f %14.6f' % (ang[0].id, ang[1].id, ang[2].id,ang[3], ang[4][0], ang[4][1])
+                            print('%6d %6d %6d %6d %14.6f %14.6f' % (ang[0].id, ang[1].id, ang[2].id,ang[3], ang[4][0], ang[4][1]), file=fp)
 
                     elif ang[3]==5:
                         # two possibilities: angle actually has a B-state or there is A state only
                         if(len(ang)>5): # B-state exists
-                            print >>fp, '%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f %14.6f %14.6f %14.6f %14.6f ; %s %s %s' % \
+                            print('%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f %14.6f %14.6f %14.6f %14.6f ; %s %s %s' % \
                               (ang[0].id, ang[1].id, ang[2].id,ang[3], ang[4][1], \
                                ang[4][2], ang[4][3], ang[4][4], ang[5][1], \
                                ang[5][2], ang[5][3], ang[5][4], \
-                               ang[0].name, ang[1].name, ang[2].name)
+                               ang[0].name, ang[1].name, ang[2].name), file=fp)
                         else: # A-state only
-                            print >>fp, '%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f' % (ang[0].id, ang[1].id, ang[2].id,ang[3], ang[4][1],ang[4][2], ang[4][3], ang[4][4] )
+                            print('%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f' % (ang[0].id, ang[1].id, ang[2].id,ang[3], ang[4][1],ang[4][2], ang[4][3], ang[4][4] ), file=fp)
                     else :
-                        print "Don't know how to print angletype %d" % ang[3]
+                        print("Don't know how to print angletype %d" % ang[3])
                         exit()
                 elif state == 'AA':
                     if ang[3]==1 :
-                        print >>fp, '%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f ; %s %s %s' % \
+                        print('%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f ; %s %s %s' % \
                           (ang[0].id, ang[1].id, ang[2].id,ang[3], ang[4][1], \
-                           ang[4][2], ang[4][1], ang[4][2], ang[0].name, ang[1].name, ang[2].name)
+                           ang[4][2], ang[4][1], ang[4][2], ang[0].name, ang[1].name, ang[2].name), file=fp)
                     elif ang[3]==5:
-                        print >>fp, '%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f %14.6f %14.6f %14.6f %14.6f ; %s %s %s' % \
+                        print('%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f %14.6f %14.6f %14.6f %14.6f ; %s %s %s' % \
                           (ang[0].id, ang[1].id, ang[2].id,ang[3], ang[4][1], \
                            ang[4][2], ang[4][3], ang[4][4], ang[4][1], \
                            ang[4][2], ang[4][3], ang[4][4], \
-                           ang[0].name, ang[1].name, ang[2].name)
+                           ang[0].name, ang[1].name, ang[2].name), file=fp)
                     else :
-                        print "Don't know how to print angletype %d" % ang[3]
+                        print("Don't know how to print angletype %d" % ang[3])
                         exit()
                 elif state == 'BB':
                     if ang[3]==1 :
-                        print >>fp, '%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f ; %s %s %s' % \
+                        print('%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f ; %s %s %s' % \
                           (ang[0].id, ang[1].id, ang[2].id,ang[3], ang[5][1], \
-                           ang[5][2], ang[5][1], ang[5][2], ang[0].name, ang[1].name, ang[2].name)
+                           ang[5][2], ang[5][1], ang[5][2], ang[0].name, ang[1].name, ang[2].name), file=fp)
                     elif ang[3]==5:
-                        print >>fp, '%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f %14.6f %14.6f %14.6f %14.6f ; %s %s %s' % \
+                        print('%6d %6d %6d %6d %14.6f %14.6f %14.6f %14.6f %14.6f %14.6f %14.6f %14.6f ; %s %s %s' % \
                           (ang[0].id, ang[1].id, ang[2].id,ang[3], ang[5][1], \
                            ang[5][2], ang[5][3], ang[5][4], ang[5][1], \
                            ang[5][2], ang[5][3], ang[5][4], \
-                           ang[0].name, ang[1].name, ang[2].name)
+                           ang[0].name, ang[1].name, ang[2].name), file=fp)
                     else :
-                        print "Don't know how to print angletype %d" % ang[3]
+                        print("Don't know how to print angletype %d" % ang[3])
                         exit()
 
     def write_cmap(self, fp):
-        print >>fp,'\n [ cmap ]'
-        print >>fp,';  ai    aj    ak    al    am funct'
+        print('\n [ cmap ]', file=fp)
+        print(';  ai    aj    ak    al    am funct', file=fp)
         for d in self.cmap:
-            print >>fp, "%6d %6d %6d %6d %6d %4d" % ( d[0].id, d[1].id, d[2].id,d[3].id,d[4].id,d[5])
+            print("%6d %6d %6d %6d %6d %4d" % ( d[0].id, d[1].id, d[2].id,d[3].id,d[4].id,d[5]), file=fp)
 
     def write_dihedrals(self, fp, state='AB'):
-        print >>fp,'\n [ dihedrals ]'
-        print >>fp,';  ai    aj    ak    al funct            c0            c1            c2            c3            c4            c5'
+        print('\n [ dihedrals ]', file=fp)
+        print(';  ai    aj    ak    al funct            c0            c1            c2            c3            c4            c5', file=fp)
         for d in self.dihedrals:
             if len(d) == 5:
-                print >>fp, "%6d %6d %6d %6d %4d" % ( d[0].id, d[1].id, d[2].id, d[3].id, d[4])
+                print("%6d %6d %6d %6d %4d" % ( d[0].id, d[1].id, d[2].id, d[3].id, d[4]), file=fp)
             elif len(d) == 6:
-                print >>fp, "%6d %6d %6d %6d %4d %s" % ( d[0].id, d[1].id, d[2].id, d[3].id, d[4], d[5])
+                print("%6d %6d %6d %6d %4d %s" % ( d[0].id, d[1].id, d[2].id, d[3].id, d[4], d[5]), file=fp)
             elif len(d) == 7:
                 A, B = self.__check_case(d[:4])
                 ast = d[5]
                 bs = d[6]
                 if ast == None or bs == None:
-                    print d[0].name, d[1].name, d[2].name, d[3].name, d[0].atomtype, d[1].atomtype, d[2].atomtype, d[3].atomtype, d[0].atomtypeB, d[1].atomtypeB, d[2].atomtypeB, d[3].atomtypeB
-                    print d[0].type, d[1].type, d[2].type, d[3].type, d[0].typeB, d[1].typeB, d[2].typeB, d[3].typeB
+                    print(d[0].name, d[1].name, d[2].name, d[3].name, d[0].atomtype, d[1].atomtype, d[2].atomtype, d[3].atomtype, d[0].atomtypeB, d[1].atomtypeB, d[2].atomtypeB, d[3].atomtypeB)
+                    print(d[0].type, d[1].type, d[2].type, d[3].type, d[0].typeB, d[1].typeB, d[2].typeB, d[3].typeB)
                 if ast == 'NULL':
                     if d[4] == 3: # Ryckaert-Bellemans
                         ast = ' '.join(["%g" % x for x in [0,0,0,0,0,0]])
@@ -892,81 +892,81 @@ class TopolBase:
                 elif bs !='NULL' and hasattr(bs,"append"):
                     bs = ' '.join(["%.10g" % x for x in d[6][1:]])
                 if state == 'AB':
-                    print >>fp, "%6d %6d %6d %6d %4d %s %s ; %s %s %s %s %s %s %s %s (%s->%s)" % \
+                    print("%6d %6d %6d %6d %4d %s %s ; %s %s %s %s %s %s %s %s (%s->%s)" % \
                           ( d[0].id, d[1].id, d[2].id, d[3].id, d[4], ast, bs, d[0].name,d[1].name,d[2].name,d[3].name, \
-                            d[0].type,d[1].type,d[2].type,d[3].type,A,B)
+                            d[0].type,d[1].type,d[2].type,d[3].type,A,B), file=fp)
                 elif state == 'AA':
-                    print >>fp, "%6d %6d %6d %6d %4d %s %s ; %s %s %s %s %s %s %s %s (%s->%s)" % \
+                    print("%6d %6d %6d %6d %4d %s %s ; %s %s %s %s %s %s %s %s (%s->%s)" % \
                           ( d[0].id, d[1].id, d[2].id, d[3].id, d[4], ast, ast, d[0].name,d[1].name,d[2].name,d[3].name, \
-                            d[0].type,d[1].type,d[2].type,d[3].type, A,B)
+                            d[0].type,d[1].type,d[2].type,d[3].type, A,B), file=fp)
                 elif state == 'BB':
-                    print >>fp, "%6d %6d %6d %6d %4d %s %s ; %s %s %s %s %s %s %s %s (%s->%s)" % \
+                    print("%6d %6d %6d %6d %4d %s %s ; %s %s %s %s %s %s %s %s (%s->%s)" % \
                           ( d[0].id, d[1].id, d[2].id, d[3].id, d[4], bs, bs, d[0].name,d[1].name,d[2].name,d[3].name, \
-                            d[0].type,d[1].type,d[2].type,d[3].type, A,B)
+                            d[0].type,d[1].type,d[2].type,d[3].type, A,B), file=fp)
 
     def write_exclusions(self, fp):
-        print >>fp,'\n [ exclusions ]'
+        print('\n [ exclusions ]', file=fp)
         for excl in self.exclusions:
             towrite = ''
             for ex in excl:
                 towrite += ' '+str(ex.id)
-            print >>fp, "%s" % towrite
+            print("%s" % towrite, file=fp)
 
     def write_vsites2(self, fp):
-        print >>fp,'\n [ virtual_sites2 ]'
-        print >>fp,';  ai    aj    ak  funct            c0            c1'
+        print('\n [ virtual_sites2 ]', file=fp)
+        print(';  ai    aj    ak  funct            c0            c1', file=fp)
         for vs in self.virtual_sites2:
             if len(vs) == 4:
-                print >>fp, "%6d %6d %6d %4d" % ( vs[0].id, vs[1].id, vs[2].id, vs[3])
+                print("%6d %6d %6d %4d" % ( vs[0].id, vs[1].id, vs[2].id, vs[3]), file=fp)
             elif len(vs) == 5:
-                print >>fp, "%6d %6d %6d %4d %s" % ( vs[0].id, vs[1].id, vs[2].id, vs[3], vs[4])
+                print("%6d %6d %6d %4d %s" % ( vs[0].id, vs[1].id, vs[2].id, vs[3], vs[4]), file=fp)
             else:
                 sys.stderr.write('EEK! Something went wrong while writing virtual_sites2!!!!\n')
-                print vs
+                print(vs)
                 sys.exit(1)
 
 
     def write_vsites3(self, fp):
-        print >>fp,'\n [ virtual_sites3 ]'
-        print >>fp,';  ai    aj    ak    al funct            c0            c1'
+        print('\n [ virtual_sites3 ]', file=fp)
+        print(';  ai    aj    ak    al funct            c0            c1', file=fp)
         for vs in self.virtual_sites3:
             if len(vs) == 5:
-                print >>fp, "%6d %6d %6d %6d %4d" % ( vs[0].id, vs[1].id, vs[2].id, vs[3].id, vs[4])
+                print("%6d %6d %6d %6d %4d" % ( vs[0].id, vs[1].id, vs[2].id, vs[3].id, vs[4]), file=fp)
             elif len(vs) == 6:
-                print >>fp, "%6d %6d %6d %6d %4d %s" % ( vs[0].id, vs[1].id, vs[2].id, vs[3].id, vs[4], vs[5])
+                print("%6d %6d %6d %6d %4d %s" % ( vs[0].id, vs[1].id, vs[2].id, vs[3].id, vs[4], vs[5]), file=fp)
             else:
                 sys.stderr.write('EEK! Something went wrong while writing virtual_sites3!!!!\n')
-                print vs
+                print(vs)
                 sys.exit(1)
 
     def write_vsites4(self, fp):
-        print >>fp,'\n [ virtual_sites4 ]'
-        print >>fp,';  ai    aj    ak    al    am  funct            c0            c1          c2'
+        print('\n [ virtual_sites4 ]', file=fp)
+        print(';  ai    aj    ak    al    am  funct            c0            c1          c2', file=fp)
         for vs in self.virtual_sites4:
             if len(vs) == 6:
-                print >>fp, "%6d %6d %6d %6d %6d %4d" % ( vs[0].id, vs[1].id, vs[2].id, vs[3].id, vs[4].id, vs[5])
+                print("%6d %6d %6d %6d %6d %4d" % ( vs[0].id, vs[1].id, vs[2].id, vs[3].id, vs[4].id, vs[5]), file=fp)
             elif len(vs) == 7:
-                print >>fp, "%6d %6d %6d %6d %6d %4d %s" % ( vs[0].id, vs[1].id, vs[2].id, vs[3].id, vs[4].id, vs[5], vs[6])
+                print("%6d %6d %6d %6d %6d %4d %s" % ( vs[0].id, vs[1].id, vs[2].id, vs[3].id, vs[4].id, vs[5], vs[6]), file=fp)
             else:
                 sys.stderr.write('EEK! Something went wrong while writing virtual_sites4!!!!\n')
-                print vs
+                print(vs)
                 sys.exit(1)
 
     def write_posre(self, fp):
-        print >>fp,'\n [ position_restraints ]'
-        print >>fp,';  ai    funct            c0            c1          c2'
+        print('\n [ position_restraints ]', file=fp)
+        print(';  ai    funct            c0            c1          c2', file=fp)
         for pr in self.posre:
             if len(pr) == 3:
-                print >>fp, "%6d %4d %s" % ( pr[0].id, pr[1], pr[2])
+                print("%6d %4d %s" % ( pr[0].id, pr[1], pr[2]), file=fp)
             else:
                 sys.stderr.write('EEK! Something went wrong while writing position_restraints!!!!\n')
-                print pr
+                print(pr)
                 sys.exit(1)
 
     def write_ii(self, fp):
         fp.write('\n [ intermolecular_interactions ]\n')
         # bonds
-        if 'bonds' in self.ii.keys():
+        if 'bonds' in list(self.ii.keys()):
             fp.write(' [ bonds ]\n')
             for b in self.ii['bonds']:
                 fp.write('%6d %6d %6d' % ( b[0].id, b[1].id, b[2] ))
@@ -975,7 +975,7 @@ class TopolBase:
                         fp.write(' %14.6f' % x)
                 fp.write('\n')
         # angles
-        if 'angles' in self.ii.keys():
+        if 'angles' in list(self.ii.keys()):
             fp.write(' [ angles ]\n')
             for ang in self.ii['angles']:
                 fp.write('%6d %6d %6d %6d' % ( ang[0].id, ang[1].id, ang[2].id, ang[3] ))
@@ -984,7 +984,7 @@ class TopolBase:
                         fp.write(' %14.6f' % x)
                 fp.write('\n')
         # dihedrals
-        if 'dihedrals' in self.ii.keys():
+        if 'dihedrals' in list(self.ii.keys()):
             fp.write(' [ dihedrals ]\n')
             for dih in self.ii['dihedrals']:
                 fp.write('%6d %6d %6d %6d %6d' % ( dih[0].id, dih[1].id, dih[2].id, dih[3].id, dih[4] ))
@@ -994,13 +994,13 @@ class TopolBase:
                 fp.write('\n')
 
     def write_system(self,fp):
-        print >>fp, '[ system ]'
-        print >>fp, self.system
+        print('[ system ]', file=fp)
+        print(self.system, file=fp)
 
     def write_molecules(self,fp):
-        print >>fp, '[ molecules ]'
+        print('[ molecules ]', file=fp)
         for mol, num in self.molecules:
-            print >>fp, "%s %d" % (mol,num)
+            print("%s %d" % (mol,num), file=fp)
 
 
     #====================================================================================
@@ -1042,7 +1042,7 @@ class TopolBase:
                 if not atom.atomtype.startswith('DUM') and not atom.atomtypeB.startswith('DUM'):
                     last_atom = atom
         if last_atom == None:
-            print >>sys.stderr, 'Error: Could not find a perturbed atom to put rest charges on !'
+            print('Error: Could not find a perturbed atom to put rest charges on !', file=sys.stderr)
             sys.exit(1)
         return last_atom
 
@@ -1122,8 +1122,8 @@ class Topology( TopolBase ):
         for i, (at1,at2,func) in enumerate(self.bonds):
             param = self.BondedParams.get_bond_param(at1.type,at2.type)
             if param is None:
-                print 'Error! No bonded parameters found! (%s-%s)' % \
-                      (at1.type, at2.type)
+                print('Error! No bonded parameters found! (%s-%s)' % \
+                      (at1.type, at2.type))
                 sys.exit(1)
             self.bonds[i].append(param[1:])
 
@@ -1131,8 +1131,8 @@ class Topology( TopolBase ):
         for i, (at1, at2, at3, func) in enumerate(self.angles):
             param = self.BondedParams.get_angle_param(at1.type, at2.type, at3.type)
             if param is None:
-                print 'Error! No angle parameters found! (%s-%s-%s)' % \
-                      (at1.type, at2.type, at3.type)
+                print('Error! No angle parameters found! (%s-%s-%s)' % \
+                      (at1.type, at2.type, at3.type))
                 sys.exit(1)
             self.angles[i].append(param[1:])
 
@@ -1146,9 +1146,9 @@ class Topology( TopolBase ):
                                                              at3.type, at4.type, \
                                                              func)
                 if param is None:
-                    print 'Error! No dihedral parameters found! (%s-%s-%s-%s)' % \
-                          (at1.type, at2.type, at3.type, at4.type)
-                    print func, dih
+                    print('Error! No dihedral parameters found! (%s-%s-%s-%s)' % \
+                          (at1.type, at2.type, at3.type, at4.type))
+                    print(func, dih)
                     sys.exit(1)
                 del self.dihedrals[i][-1]
                 self.dihedrals[i].append(param[1:])
@@ -1354,7 +1354,7 @@ class MDP:
 
     def __str__(self):
         line = ''
-        for key, val in self.parameters.items():
+        for key, val in list(self.parameters.items()):
             if hasattr(val,"append"):
                 s = ''
                 for x in val:
@@ -1365,8 +1365,8 @@ class MDP:
         return line
 
     def __setitem__(self,item,value):
-        if not self.parameters.has_key(item):
-            raise MDPError, "No such option %s" % item
+        if item not in self.parameters:
+            raise MDPError("No such option %s" % item)
 
         self.parameters[item] = value
 
@@ -1377,7 +1377,7 @@ class MDP:
         else:
             if not hasattr(fp,"write"):
                 fp = open(fp,"w")
-        print >>fp, self
+        print(self, file=fp)
 
     def read(self, filename):
         lines = open(filename).readlines()
@@ -1386,8 +1386,8 @@ class MDP:
             entr = line.split('=')
             key = entr[0].strip()
             val = entr[1].strip().split()
-            if not self.parameters.has_key(key):
-                print 'Warning! Ignoring entry \'%s\'' % key
+            if key not in self.parameters:
+                print('Warning! Ignoring entry \'%s\'' % key)
             else:
                 if len(val) == 0:
                     self[key] = ''
@@ -1483,7 +1483,7 @@ def make_amber_residue_names(model):
                     o1.name = 'OC1'
                     o2.name = 'OC2'
                 except:
-                    print >>sys.stderr, 'pmx_Warning_> No terminal oxygen atoms found in chain %s' % chain.id
+                    print('pmx_Warning_> No terminal oxygen atoms found in chain %s' % chain.id, file=sys.stderr)
 
 
 #=================================================================================

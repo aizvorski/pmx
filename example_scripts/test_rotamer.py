@@ -2,12 +2,12 @@ from pmx import *
 from pmx.rotamer import *
 
 c = Chain().create("ALARYTK")
-print 'done'
+print('done')
 c.add_nterm_cap()
 c.add_cterm_cap()
 
 c.rename_atoms()
-print c.sequence()
+print(c.sequence())
 c.write('x.pdb')
 ## bbdep = load_bbdep()
 

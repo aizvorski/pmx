@@ -76,7 +76,7 @@ cpp_lines_dict = {
 # the corresponding compiled regular expression that fetches the arguments
 # we care about.
 Table = {}
-for op_list, expr in cpp_lines_dict.items():
+for op_list, expr in list(cpp_lines_dict.items()):
     e = re.compile(expr)
     for op in op_list:
         Table[op] = e
@@ -91,7 +91,7 @@ del op_list
 override = {
     'if'                        : 'if(?!def)',
 }
-l = map(lambda x, o=override: o.get(x, x), Table.keys())
+l = list(map(lambda x, o=override: o.get(x, x), list(Table.keys())))
 
 
 # Turn the list of expressions into one big honkin' regular expression
@@ -134,12 +134,12 @@ CPP_to_Python_Ops_Sub = lambda m, d=CPP_to_Python_Ops_Dict: d[m.group(0)]
 # re module, as late as version 2.2.2, empirically matches the
 # "!" in "!=" first, instead of finding the longest match.
 # What's up with that?
-l = CPP_to_Python_Ops_Dict.keys()
+l = list(CPP_to_Python_Ops_Dict.keys())
 l.sort(lambda a, b: cmp(len(b), len(a)))
 
 # Turn the list of keys into one regular expression that will allow us
 # to substitute all of the operators at once.
-expr = string.join(map(re.escape, l), '|')
+expr = string.join(list(map(re.escape, l)), '|')
 
 # ...and compile the expression.
 CPP_to_Python_Ops_Expression = re.compile(expr)
@@ -204,7 +204,7 @@ class FunctionEvaluator:
         with the specified values.
         """
         if len(self.args) != len(values):
-            raise ValueError, "Incorrect number of arguments to `%s'" % self.name
+            raise ValueError("Incorrect number of arguments to `%s'" % self.name)
         # Create a dictionary that maps the macro arguments to the
         # corresponding values in this "call."  We'll use this when we
         # eval() the expansion so that arguments will get expanded to
@@ -273,7 +273,7 @@ class PreProcessor:
         d = {
             'scons_current_file'    : self.scons_current_file
         }
-        for op in Table.keys():
+        for op in list(Table.keys()):
             d[op] = getattr(self, 'do_' + op)
         self.default_table = d
 
@@ -292,9 +292,9 @@ class PreProcessor:
         global CPP_Expression, Table
         contents = line_continuations.sub('', contents)
         cpp_tuples = CPP_Expression.findall(contents)
-        return  map(lambda m, t=Table:
+        return  list(map(lambda m, t=Table:
                            (m[0],) + t[m[0]].match(m[1]).groups(),
-                    cpp_tuples)
+                    cpp_tuples))
 
     def __call__(self, file):
         """
@@ -446,13 +446,13 @@ class PreProcessor:
         """
         Default handling of a #ifdef line.
         """
-        self._do_if_else_condition(self.cpp_namespace.has_key(t[1]))
+        self._do_if_else_condition(t[1] in self.cpp_namespace)
 
     def do_ifndef(self, t):
         """
         Default handling of a #ifndef line.
         """
-        self._do_if_else_condition(not self.cpp_namespace.has_key(t[1]))
+        self._do_if_else_condition(t[1] not in self.cpp_namespace)
 
     def do_if(self, t):
         """
@@ -563,7 +563,7 @@ class PreProcessor:
                 s = self.cpp_namespace[m.group(1)]
                 if callable(s):
                     args = function_arg_separator.split(m.group(2))
-                    s = apply(s, args)
+                    s = s(*args)
             if not s:
                 return None
         return (t[0], s[0], s[1:-1])
@@ -584,7 +584,7 @@ class DumbPreProcessor(PreProcessor):
     to tailor its behavior.
     """
     def __init__(self, *args, **kw):
-        apply(PreProcessor.__init__, (self,)+args, kw)
+        PreProcessor.__init__(*(self,)+args, **kw)
         d = self.default_table
         for func in ['if', 'elif', 'else', 'endif', 'ifdef', 'ifndef']:
             d[func] = d[func] = self.do_nothing

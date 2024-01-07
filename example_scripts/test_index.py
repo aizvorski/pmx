@@ -6,8 +6,8 @@ m = Model( "gmx.pdb" )
 
 ndx = IndexFile("index.ndx")
 
-print ndx
-print ndx['Backbone']
+print(ndx)
+print(ndx['Backbone'])
 
 atoms = ndx['Backbone'].select_atoms( m )
 del ndx['Backbone']
@@ -17,6 +17,6 @@ ndx.add_group( grp )
 
 
 
-print ndx
+print(ndx)
 #for atom in atoms:
 #    print atom
