@@ -37,7 +37,7 @@ from .atom import Atom
 from .odict import *
 from .library import _aliases
 from .ffparser import *
-import _pmx as _p
+from  . import _pmx as _p
 
 def get_bond_param(type1,type2,bond_lib):
     for entr in bond_lib:

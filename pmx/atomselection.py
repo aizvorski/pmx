@@ -41,7 +41,7 @@ from .atom import *
 from .geometry import Rotation
 from . import library
 import copy as cp
-import _pmx
+from  . import _pmx
 #import _gridns
 
 XX = 0

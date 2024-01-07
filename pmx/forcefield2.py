@@ -41,7 +41,7 @@ from .molecule import Molecule
 from .odict import *
 from .library import _aliases
 from .ffparser import *
-import _pmx as _p
+from  . import _pmx as _p
 
 def TR ( s ):
     print("pmx.forcefield_> " + s)

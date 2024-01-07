@@ -54,7 +54,8 @@ Basic Usage:
 """
 import sys
 from .atomselection import *
-import library, copy
+import copy
+from . import library
 from .rotamer import _aa_chi
 
 class Molecule(Atomselection):

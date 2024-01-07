@@ -42,7 +42,7 @@ Usage:
 """
 from numpy import *
 from .atom import Atom
-import _pmx as _p
+from  . import _pmx as _p
 
 class Rotation2:
 

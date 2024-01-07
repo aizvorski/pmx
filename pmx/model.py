@@ -69,12 +69,13 @@ Basic Usage:
     >>> model.write(args['-o']) write new structure file
     """
 from .atomselection import *
-import sys,copy,library
+import sys,copy
+from . import library
 #from chain import *
 from . import chain
 from .molecule import *
 from .atom import *
-import _pmx as _p
+from . import _pmx as _p
 XX       =  0
 YY       =  1
 ZZ       =  2

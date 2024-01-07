@@ -49,9 +49,10 @@ Basic Usage:
 
 """
 
-import _pmx as _p
+from . import _pmx as _p
 from numpy import *
-import copy, library
+import copy
+from . import library
 from .library import pdb_format, pdb_format2
 
 class Atom:

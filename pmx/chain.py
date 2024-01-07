@@ -51,7 +51,8 @@ Basic Usage:
 """
 from .atomselection import *
 from .molecule import *
-import copy, library
+import copy
+from . import library
 #import builder
 
 class Chain(Atomselection):
